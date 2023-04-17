@@ -12,20 +12,28 @@ public class CartItem extends Domain<UUID> implements Gift {
    */
   private final UUID cartId;
   private final UUID productId;
+  private String productName;
+  private double productPrice;
+  private double productWeight;
+  private TaxType taxType;
   private int quantity;
   private String message;
 
   /**
    * Constructor
    */
-  public CartItem(UUID cartId, UUID productId, int quantity) {
-    this(UUID.randomUUID(), cartId, productId, quantity);
+  public CartItem(UUID cartId, UUID productId, String productName, double productPrice, double productWeight, TaxType taxType, int quantity) {
+    this(UUID.randomUUID(), cartId, productId, productName, productPrice, productWeight, taxType, quantity);
   }
 
-  public CartItem(UUID id, UUID cartId, UUID productId, int quantity) {
+  public CartItem(UUID id, UUID cartId, UUID productId, String productName, double productPrice, double productWeight, TaxType taxType, int quantity) {
     super(id);
     this.cartId = cartId;
     this.productId = productId;
+    this.productName = productName;
+    this.productPrice = productPrice;
+    this.productWeight = productWeight;
+    this.taxType = taxType;
     this.quantity = quantity;
   }
 
@@ -35,6 +43,14 @@ public class CartItem extends Domain<UUID> implements Gift {
 
   public void decreaseQuantity(int quantity) {
     this.quantity -= quantity;
+  }
+
+  public void syncProductInfo(String productName, double productPrice, double productWeight, TaxType taxType) {
+
+    this.productName = productName;
+    this.productPrice = productPrice;
+    this.productWeight = productWeight;
+    this.taxType = taxType;
   }
 
   // Override methods
@@ -55,6 +71,22 @@ public class CartItem extends Domain<UUID> implements Gift {
 
   public UUID getProductId() {
     return productId;
+  }
+
+  public String getProductName() {
+    return productName;
+  }
+
+  public double getProductPrice() {
+    return productPrice;
+  }
+
+  public double getProductWeight() {
+    return productWeight;
+  }
+
+  public TaxType getTaxType() {
+    return taxType;
   }
 
   public int getQuantity() {

@@ -1,9 +1,6 @@
 package oss.cosc2440.rmit;
 
-import oss.cosc2440.rmit.repository.CartRepository;
-import oss.cosc2440.rmit.repository.FileCartRepositoryImpl;
-import oss.cosc2440.rmit.repository.FileProductRepositoryImpl;
-import oss.cosc2440.rmit.repository.ProductRepository;
+import oss.cosc2440.rmit.repository.*;
 import oss.cosc2440.rmit.seedwork.Constants;
 import oss.cosc2440.rmit.service.*;
 
@@ -20,8 +17,11 @@ public class Main {
     CartRepository cartRepository = new FileCartRepositoryImpl(
         Objects.requireNonNull(Main.class.getClassLoader().getResource(Constants.CART_FILE_NAME)).getPath());
 
-    ProductService productService = new ProductService(productRepository);
-    CartService cartService = new CartService(cartRepository);
+    CouponRepository couponRepository = new FileCouponRepositoryImpl(
+        Objects.requireNonNull(Main.class.getClassLoader().getResource(Constants.COUPON_FILE_NAME)).getPath());
+
+    ProductService productService = new ProductService(productRepository, couponRepository);
+    CartService cartService = new CartService(cartRepository, productService);
     MenuService menuService = new MenuService(productService, cartService);
     menuService.welcomeScreen();
   }

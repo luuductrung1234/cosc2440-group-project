@@ -9,20 +9,12 @@ public class DigitalProduct extends Product {
   /**
    * Constructor
    */
-  public DigitalProduct(String name, String description, int quantity, double price, boolean canUseAsGift) {
-    this(UUID.randomUUID(), name, description, quantity, price, canUseAsGift);
+  public DigitalProduct(String name, String description, int quantity, double price, TaxType taxType, boolean canUseAsGift) {
+    this(UUID.randomUUID(), name, description, quantity, price, taxType, canUseAsGift);
   }
 
-  public DigitalProduct(UUID id, String name, String description, int quantity, double price, boolean canUseAsGift) {
-    super(id, name, description, quantity, price, canUseAsGift);
-  }
-
-  public void update(String name, String description, int quantity, double price, boolean canUseAsGift) {
-    this.name = name;
-    this.description = description;
-    this.quantity = quantity;
-    this.price = price;
-    this.canUseAsGift = canUseAsGift;
+  public DigitalProduct(UUID id, String name, String description, int quantity, double price, TaxType taxType, boolean canUseAsGift) {
+    super(id, name, description, quantity, price, taxType, canUseAsGift);
   }
 
   // Override methods

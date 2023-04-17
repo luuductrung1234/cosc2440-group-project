@@ -14,23 +14,19 @@ public class PhysicalProduct extends Product {
   /**
    * Constructor
    */
-  public PhysicalProduct(String name, String description, int quantity, double price, double weight, boolean canUseAsGift) {
-    super(UUID.randomUUID(), name, description, quantity, price, canUseAsGift);
+  public PhysicalProduct(String name, String description, int quantity, double price, TaxType taxType, double weight, boolean canUseAsGift) {
+    super(UUID.randomUUID(), name, description, quantity, price, taxType, canUseAsGift);
     this.weight = weight;
   }
 
-  public PhysicalProduct(UUID id, String name, String description, int quantity, double price, double weight, boolean canUseAsGift) {
-    super(id, name, description, quantity, price, canUseAsGift);
+  public PhysicalProduct(UUID id, String name, String description, int quantity, double price, TaxType taxType, double weight, boolean canUseAsGift) {
+    super(id, name, description, quantity, price, taxType, canUseAsGift);
     this.weight = weight;
   }
 
   public void update(String name, String description, int quantity, double price, double weight, boolean canUseAsGift) {
-    this.name = name;
-    this.description = description;
-    this.quantity = quantity;
-    this.price = price;
+    super.update(name, description, quantity, price, canUseAsGift);
     this.weight = weight;
-    this.canUseAsGift = canUseAsGift;
   }
 
   // Getter methods

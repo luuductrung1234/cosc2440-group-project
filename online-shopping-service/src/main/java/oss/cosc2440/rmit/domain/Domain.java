@@ -28,4 +28,9 @@ public abstract class Domain<TId> {
     public static <TId> Domain<TId> deserialize(String data) {
         throw new UnsupportedOperationException("deserialize() has not been implemented!");
     }
+
+    // Getter methods
+    public TId getId() {
+        return id;
+    }
 }

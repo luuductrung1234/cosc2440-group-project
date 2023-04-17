@@ -8,6 +8,7 @@ import java.io.File;
 public class Constants {
   public static final String PRODUCT_FILE_NAME = "data" + File.separator + "products.txt";
   public static final String CART_FILE_NAME = "data" + File.separator + "carts.txt";
+  public static final String COUPON_FILE_NAME = "data" + File.separator + "coupons.txt";
 
   public static final double BASE_FEE = 0.1;
 
