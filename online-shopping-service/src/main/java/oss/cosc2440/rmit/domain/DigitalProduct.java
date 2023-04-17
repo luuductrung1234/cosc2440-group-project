@@ -1,5 +1,7 @@
 package oss.cosc2440.rmit.domain;
 
+import java.util.UUID;
+
 /**
  * @author Luu Duc Trung - S3951127
  */
@@ -7,30 +9,23 @@ public class DigitalProduct extends Product {
   /**
    * Constructor
    */
-  public DigitalProduct(String name, String description, int quantity, double price) {
-    super(name, description, quantity, price);
+  public DigitalProduct(String name, String description, int quantity, double price, boolean canUseAsGift) {
+    this(UUID.randomUUID(), name, description, quantity, price, canUseAsGift);
   }
 
-  public void update(String description, int quantity, double price) {
+  public DigitalProduct(UUID id, String name, String description, int quantity, double price, boolean canUseAsGift) {
+    super(id, name, description, quantity, price, canUseAsGift);
+  }
+
+  public void update(String name, String description, int quantity, double price, boolean canUseAsGift) {
+    this.name = name;
     this.description = description;
     this.quantity = quantity;
     this.price = price;
-  }
-
-  public void update(String description, double price) {
-    this.description = description;
-    this.price = price;
+    this.canUseAsGift = canUseAsGift;
   }
 
   // Override methods
-  @Override
-  public Product splitOne() {
-    if(quantity < 1)
-      throw new IllegalStateException("Not enough quantity to split");
-    this.decreaseQuantity();
-    return new DigitalProduct(this.getName(), this.description, 1, this.price);
-  }
-
   @Override
   public ProductType getType() {
     return ProductType.DIGITAL;

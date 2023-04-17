@@ -1,5 +1,7 @@
 package oss.cosc2440.rmit.domain;
 
+import java.util.UUID;
+
 /**
  * @author Luu Duc Trung - S3951127
  */
@@ -12,22 +14,23 @@ public class PhysicalProduct extends Product {
   /**
    * Constructor
    */
-  public PhysicalProduct(String name, String description, int quantity, double price, double weight) {
-    super(name, description, quantity, price);
+  public PhysicalProduct(String name, String description, int quantity, double price, double weight, boolean canUseAsGift) {
+    super(UUID.randomUUID(), name, description, quantity, price, canUseAsGift);
     this.weight = weight;
   }
 
-  public void update(String description, int quantity, double price, double weight) {
+  public PhysicalProduct(UUID id, String name, String description, int quantity, double price, double weight, boolean canUseAsGift) {
+    super(id, name, description, quantity, price, canUseAsGift);
+    this.weight = weight;
+  }
+
+  public void update(String name, String description, int quantity, double price, double weight, boolean canUseAsGift) {
+    this.name = name;
     this.description = description;
     this.quantity = quantity;
     this.price = price;
     this.weight = weight;
-  }
-
-  public void update(String description, double price, double weight) {
-    this.description = description;
-    this.price = price;
-    this.weight = weight;
+    this.canUseAsGift = canUseAsGift;
   }
 
   // Getter methods
@@ -36,14 +39,6 @@ public class PhysicalProduct extends Product {
   }
 
   // Override methods
-  @Override
-  public Product splitOne() {
-    if(quantity < 1)
-      throw new IllegalStateException("Not enough quantity to split");
-    this.decreaseQuantity();
-    return new PhysicalProduct(this.getName(), this.description, 1, this.price, this.weight);
-  }
-
   @Override
   public ProductType getType() {
     return ProductType.PHYSICAL;

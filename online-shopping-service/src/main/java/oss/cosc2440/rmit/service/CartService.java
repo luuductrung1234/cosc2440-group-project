@@ -1,30 +1,25 @@
 package oss.cosc2440.rmit.service;
 
-import java.util.ArrayList;
-import java.util.Comparator;
+import oss.cosc2440.rmit.domain.ShoppingCart;
+import oss.cosc2440.rmit.repository.CartRepository;
+
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * @author Luu Duc Trung - S3951127
  * Manage a collection of shopping carts (sorted by total weight, by default)
  */
 public class CartService {
-  private final List<ShoppingCart> shoppingCarts;
+  private final CartRepository cartRepository;
 
-  public CartService() {
-    shoppingCarts = new ArrayList<>();
-  }
-
-  public CartService(StorageFactory storageFactory, ProductService productService) {
-    shoppingCarts = storageFactory.createCartStorage(() -> new ShoppingCart(productService));
+  public CartService(CartRepository cartRepository) {
+    this.cartRepository = cartRepository;
   }
 
   public List<ShoppingCart> listAll() {
-    return shoppingCarts.stream().sorted(Comparator.comparingDouble(ShoppingCart::totalWeight).reversed()).collect(Collectors.toList());
+    return List.of();
   }
 
   public void add(ShoppingCart shoppingCart) {
-    shoppingCarts.add(shoppingCart);
   }
 }
