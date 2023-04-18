@@ -1,0 +1,2 @@
+SUMMERSALE2023,Dark Soul,price-coupon,10
+BLACKFIRDAY99,Deluxe Camera,percent-coupon,5
