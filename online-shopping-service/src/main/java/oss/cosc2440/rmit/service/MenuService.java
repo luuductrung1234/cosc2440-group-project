@@ -3,6 +3,7 @@ package oss.cosc2440.rmit.service;
 import oss.cosc2440.rmit.domain.PhysicalProduct;
 import oss.cosc2440.rmit.domain.Product;
 import oss.cosc2440.rmit.domain.ProductType;
+import oss.cosc2440.rmit.domain.ShoppingCart;
 import oss.cosc2440.rmit.model.CreateProductModel;
 import oss.cosc2440.rmit.model.SearchProductParameters;
 import oss.cosc2440.rmit.model.UpdateProductModel;
@@ -29,7 +30,7 @@ public class MenuService {
   public MenuService(ProductService productService, CartService cartService) {
     this.productService = productService;
     this.cartService = cartService;
-    this.currentCart = new ShoppingCart(productService);
+    this.currentCart = new ShoppingCart();
   }
 
   /**
@@ -51,61 +52,13 @@ public class MenuService {
   }
 
   public void showCartScreen() {
-    AtomicBoolean goBack = new AtomicBoolean(false);
-    do {
-      banner("current shopping cart");
-      currentCart.printDetail();
-
-      List<ActionOption<Runnable>> actionOptions = new ArrayList<>();
-
-      if (currentCart.totalQuantity() > 0) {
-        actionOptions.add(new ActionOption<>("purchase as gift", () -> {
-          int productNo = Helpers.requestIntInput(scanner, "Enter product No. to set message: ", (value) -> {
-            if (value < 0 || value >= currentCart.totalQuantity()) {
-              return ValidationResult.inValidInstance("Given product No. is out of index.");
-            }
-            return ValidationResult.validInstance();
-          });
-
-          String message = Helpers.requestStringInput(scanner, "Enter gift message: ", (value) -> {
-            if (Helpers.isNullOrEmpty(value)) {
-              return ValidationResult.inValidInstance("Message must not be empty!");
-            }
-            return ValidationResult.validInstance();
-          });
-
-          String productName = currentCart.getItem(productNo);
-          if (currentCart.setItemMessage(productName, message))
-            Logger.printSuccess("Set gift message successfully!");
-          else
-            Logger.printDanger("Set gift message failed!");
-        }));
-
-        actionOptions.add(new ActionOption<>("remove item from cart", () -> {
-          int productNo = Helpers.requestIntInput(scanner, "Enter product No. to remove from cart: ", (value) -> {
-            if (value < 0 || value >= currentCart.totalQuantity()) {
-              return ValidationResult.inValidInstance("Given product No. is out of index.");
-            }
-            return ValidationResult.validInstance();
-          });
-          String productName = currentCart.getItem(productNo);
-          if (currentCart.removeItem(productName))
-            Logger.printSuccess("Remove item from cart successfully!");
-          else
-            Logger.printDanger("Remove item from cart failed!");
-        }));
-
-        actionOptions.add(new ActionOption<>("submit cart", () -> {
-          cartService.add(currentCart);
-          currentCart = new ShoppingCart(productService);
-          Logger.printSuccess("Submit cart successfully!");
-        }));
-      }
-
-      addCommonActions(actionOptions, goBack);
-      Helpers.requestSelectAction(scanner, "Your choice [0-" + (actionOptions.size() - 1) + "]: ", actionOptions);
-    } while (!goBack.get());
+    // TODO: implement showCartScreen
   }
+
+  public void listCartsScreen() {
+    // TODO: implement listCartsScreen
+  }
+
 
   public void listProductsScreen() {
     AtomicReference<SearchProductParameters> searchParameters = new AtomicReference<>(new SearchProductParameters());
@@ -162,10 +115,7 @@ public class MenuService {
             }
             return ValidationResult.validInstance();
           });
-          if (currentCart.addItem(products.get(productNo).getName()))
-            Logger.printSuccess("Add item to cart successfully!");
-          else
-            Logger.printDanger("Add item to cart failed!");
+          // TODO: add to cart
         }));
         add(new ActionOption<>("create product", () -> createProductScreen()));
         add(new ActionOption<>("edit product", () -> {
@@ -179,28 +129,6 @@ public class MenuService {
         }));
       }};
 
-      addCommonActions(actionOptions, goBack);
-      Helpers.requestSelectAction(scanner, "Your choice [0-" + (actionOptions.size() - 1) + "]: ", actionOptions);
-    } while (!goBack.get());
-  }
-
-  public void listCartsScreen() {
-    AtomicBoolean goBack = new AtomicBoolean(false);
-    do {
-      banner("shopping carts");
-      List<ShoppingCart> carts = cartService.listAll();
-
-      System.out.printf("%-7s %-40s %-10s %-25s %-15s\n", "No.", "id", "quantity", "amount", "weight (sorted)");
-      System.out.println("-".repeat(100));
-      if (carts.isEmpty())
-        Logger.printInfo("No shopping cart found...");
-      for (int cartNo = 0; cartNo < carts.size(); cartNo++) {
-        ShoppingCart cart = carts.get(cartNo);
-        System.out.printf("%-7s %-40s %-10s %-25s %-15s\n", cartNo, cart.getId(), cart.totalQuantity(),
-            Helpers.toString(cart.cartAmount(), "USD", true), cart.totalWeight());
-      }
-
-      List<ActionOption<Runnable>> actionOptions = new ArrayList<>();
       addCommonActions(actionOptions, goBack);
       Helpers.requestSelectAction(scanner, "Your choice [0-" + (actionOptions.size() - 1) + "]: ", actionOptions);
     } while (!goBack.get());
@@ -281,11 +209,14 @@ public class MenuService {
 
   public void welcomeScreen() {
     banner("welcome", "", "*");
-    System.out.println("*\tCOSC2440 Individual Project");
+    System.out.println("*\tCOSC2440 Group Project");
     System.out.println("*\tONLINE SHOPPING SYSTEM");
     System.out.println("*\tInstructor: Mr. Tri Dang");
-    System.out.println("*\tAuthor:");
+    System.out.println("*\tAuthors:");
     System.out.println("*\ts3951127, Luu Duc Trung");
+    System.out.println("*\ts3938007, Pham Hoang Long");
+    System.out.println("*\ts3891941, Yunjae Kim");
+    System.out.println("*\ts3915034, Do Phan Nhat Anh");
     System.out.println();
     Boolean answer = Helpers.requestBooleanInput(scanner, "Do you want to continue? [y/n]: ");
     if (answer)
