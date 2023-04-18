@@ -1,27 +1,37 @@
 package oss.cosc2440.rmit.domain;
 
+import java.util.UUID;
+
 /**
  * @author Luu Duc Trung - S3951127
  */
-public abstract class Product implements Gift, Splittable<Product> {
+public abstract class Product extends Domain<UUID> {
 
   /**
    * product attributes
    */
   private String name;
-  protected String description;
-  protected int quantity;
-  protected double price;
-  private String message;
+  private String description;
+  private int quantity;
+  private double price;
+  private TaxType taxType;
+  private boolean canUseAsGift;
 
   /**
    * Constructor
    */
-  public Product(String name, String description, int quantity, double price) {
+  public Product(String name, String description, int quantity, double price, TaxType taxType, boolean canUseAsGift) {
+    this(UUID.randomUUID(), name, description, quantity, price, taxType, canUseAsGift);
+  }
+
+  public Product(UUID id, String name, String description, int quantity, double price, TaxType taxType, boolean canUseAsGift) {
+    super(id);
     this.name = name;
     this.description = description;
     this.quantity = quantity;
     this.price = price;
+    this.taxType = taxType;
+    this.canUseAsGift = canUseAsGift;
   }
 
   public void decreaseQuantity() {
@@ -32,17 +42,15 @@ public abstract class Product implements Gift, Splittable<Product> {
     this.quantity++;
   }
 
+  public void update(String name, String description, int quantity, double price, boolean canUseAsGift) {
+    this.name = name;
+    this.description = description;
+    this.quantity = quantity;
+    this.price = price;
+    this.canUseAsGift = canUseAsGift;
+  }
+
   public abstract ProductType getType();
-
-  @Override
-  public void setMessage(String msg) {
-    this.message = msg;
-  }
-
-  @Override
-  public String getMessage() {
-    return this.message;
-  }
 
   // Getter methods
   public String getName() {
@@ -59,5 +67,13 @@ public abstract class Product implements Gift, Splittable<Product> {
 
   public double getPrice() {
     return price;
+  }
+
+  public TaxType getTaxType() {
+    return taxType;
+  }
+
+  public boolean canUseAsGift() {
+    return canUseAsGift;
   }
 }

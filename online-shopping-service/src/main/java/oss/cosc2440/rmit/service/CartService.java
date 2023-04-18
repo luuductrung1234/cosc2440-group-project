@@ -1,6 +1,9 @@
 package oss.cosc2440.rmit.service;
 
-import java.util.ArrayList;
+import oss.cosc2440.rmit.domain.Product;
+import oss.cosc2440.rmit.domain.ShoppingCart;
+import oss.cosc2440.rmit.repository.CartRepository;
+
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -10,21 +13,43 @@ import java.util.stream.Collectors;
  * Manage a collection of shopping carts (sorted by total weight, by default)
  */
 public class CartService {
-  private final List<ShoppingCart> shoppingCarts;
+  private final CartRepository cartRepository;
+  private final ProductService productService;
 
-  public CartService() {
-    shoppingCarts = new ArrayList<>();
-  }
-
-  public CartService(StorageFactory storageFactory, ProductService productService) {
-    shoppingCarts = storageFactory.createCartStorage(() -> new ShoppingCart(productService));
+  public CartService(CartRepository cartRepository, ProductService productService) {
+    this.cartRepository = cartRepository;
+    this.productService = productService;
   }
 
   public List<ShoppingCart> listAll() {
-    return shoppingCarts.stream().sorted(Comparator.comparingDouble(ShoppingCart::totalWeight).reversed()).collect(Collectors.toList());
+    return cartRepository.listAll().stream()
+        .sorted(Comparator.comparingDouble(ShoppingCart::totalWeight))
+        .collect(Collectors.toList());
   }
 
-  public void add(ShoppingCart shoppingCart) {
-    shoppingCarts.add(shoppingCart);
+  public void syncProductInfo(Product product) {
+    // find all non-purchased carts
+    // sync product info
+  }
+
+  public void submit(ShoppingCart cart) {
+    // save cart
+  }
+
+  public void printReceipt(ShoppingCart cart, boolean printToFile) {
+    if (printToFile) {
+      printToFile(cart);
+    } else {
+      print(cart);
+    }
+    // set date of purchase
+  }
+
+  public void print(ShoppingCart cart) {
+    // print to console
+  }
+
+  public void printToFile(ShoppingCart cart) {
+    // print to file
   }
 }
