@@ -32,6 +32,9 @@ public class ProductService {
   }
 
   public boolean updateProduct(UpdateProductModel model) {
+    // apply the updates
+    // save data
+    // sync new product info into non-purchased carts
     return false;
   }
 }

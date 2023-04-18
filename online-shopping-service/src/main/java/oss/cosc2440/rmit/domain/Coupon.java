@@ -1,6 +1,5 @@
 package oss.cosc2440.rmit.domain;
 
-import java.util.List;
 import java.util.UUID;
 
 public abstract class Coupon<T> extends Domain<UUID> {
@@ -10,16 +9,16 @@ public abstract class Coupon<T> extends Domain<UUID> {
    */
   private final String code;
   private final T value;
-  private final List<UUID> targetProducts;
+  private final UUID targetProduct;
 
   /**
    * Constructor
    */
-  public Coupon(UUID uuid, String code, T value, List<UUID> targetProducts) {
+  public Coupon(UUID uuid, String code, T value, UUID targetProduct) {
     super(uuid);
     this.code = code;
     this.value = value;
-    this.targetProducts = targetProducts;
+    this.targetProduct = targetProduct;
   }
 
   // Getter methods
@@ -33,7 +32,7 @@ public abstract class Coupon<T> extends Domain<UUID> {
     return code;
   }
 
-  public List<UUID> getTargetProducts() {
-    return targetProducts;
+  public UUID getTargetProduct() {
+    return targetProduct;
   }
 }

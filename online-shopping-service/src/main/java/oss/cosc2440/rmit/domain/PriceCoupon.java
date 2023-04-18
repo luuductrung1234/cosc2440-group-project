@@ -1,11 +1,10 @@
 package oss.cosc2440.rmit.domain;
 
-import java.util.List;
 import java.util.UUID;
 
 public class PriceCoupon extends Coupon<Double> {
-  public PriceCoupon(UUID uuid, String code, Double value, List<UUID> targetProducts) {
-    super(uuid, code, value, targetProducts);
+  public PriceCoupon(UUID uuid, String code, Double value, UUID targetProduct) {
+    super(uuid, code, value, targetProduct);
   }
 
   @Override
