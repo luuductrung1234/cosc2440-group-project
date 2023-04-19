@@ -1,5 +1,6 @@
 package oss.cosc2440.rmit.domain;
 
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -75,5 +76,18 @@ public abstract class Product extends Domain<UUID> {
 
   public boolean canUseAsGift() {
     return canUseAsGift;
+  }
+
+  // compare each products by name
+  @Override
+  public boolean equals(Object obj) {
+      if (obj == this) {
+          return true;
+      }
+      if (!(obj instanceof Product)) {
+          return false;
+      }
+      Product other = (Product) obj;
+      return Objects.equals(name, other.name);
   }
 }
