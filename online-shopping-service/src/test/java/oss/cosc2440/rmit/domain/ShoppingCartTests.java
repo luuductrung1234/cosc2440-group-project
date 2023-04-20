@@ -1,45 +1,98 @@
 package oss.cosc2440.rmit.domain;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.UUID;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class ShoppingCartTests {
+
+  ShoppingCart shoppingCart;
+
+  @BeforeEach
+  void setup() {
+    PhysicalProduct physicalProduct;
+    DigitalProduct digitalProduct;
+    CartItem cartItem1;
+    CartItem cartItem2;
+    shoppingCart = new ShoppingCart();
+
+    physicalProduct = new PhysicalProduct("book1", "book", 1, 1.1, TaxType.NORMAL_TAX, 1.2, false);
+
+    digitalProduct = new DigitalProduct("Ebook1", "Ebook", 2, 1.2, TaxType.LUXURY_TAX, false);
+
+    shoppingCart.addItem(digitalProduct);
+    shoppingCart.addItem(physicalProduct);
+  }
+
   @Test
   public void addItemShouldSuccess() {
-    // TODO: write test
+    PhysicalProduct physicalProduct;
+    DigitalProduct digitalProduct;
+    physicalProduct = new PhysicalProduct("book2", "book", 1, 1.1, TaxType.NORMAL_TAX, 1.2, false);
+
+    digitalProduct = new DigitalProduct("Ebook2", "Ebook", 2, 1.2, TaxType.LUXURY_TAX, false);
+    shoppingCart.addItem(digitalProduct);
+    shoppingCart.addItem(physicalProduct);
+
+    assertTrue(shoppingCart.addItem(digitalProduct));
+    assertTrue(shoppingCart.addItem(physicalProduct));
+
   }
 
   @Test
   public void addItemAlreadyExistedShouldFail() {
-    // TODO: write test
-  }
+    PhysicalProduct physicalProduct;
+    DigitalProduct digitalProduct;
+    physicalProduct = new PhysicalProduct("book1", "book", 1, 1.1, TaxType.NORMAL_TAX, 1.2, false);
 
-  @Test
-  public void addItemButEmptyShouldFail() {
-    // TODO: write test
+    digitalProduct = new DigitalProduct("Ebook1", "Ebook", 2, 1.2, TaxType.LUXURY_TAX, false);
+
+    shoppingCart.addItem(digitalProduct);
+    shoppingCart.addItem(physicalProduct);
+
+    assertFalse(shoppingCart.addItem(digitalProduct));
+    assertFalse(shoppingCart.addItem(physicalProduct));
+
   }
 
   @Test
   public void removeExistedItemShouldSuccess() {
-    // TODO: write test
+    PhysicalProduct physicalProduct;
+    DigitalProduct digitalProduct;
+    physicalProduct = new PhysicalProduct("book1", "book", 1, 1.1, TaxType.NORMAL_TAX, 1.2, false);
+
+    digitalProduct = new DigitalProduct("Ebook1", "Ebook", 2, 1.2, TaxType.LUXURY_TAX, false);
+
+    shoppingCart.addItem(digitalProduct);
+    shoppingCart.addItem(physicalProduct);
+
+    assertTrue(shoppingCart.addItem(digitalProduct));
+    assertTrue(shoppingCart.addItem(physicalProduct));
+
   }
 
   @Test
   public void removeNotExistedItemShouldFail() {
-    // TODO: write test
-  }
+    PhysicalProduct physicalProduct;
+    DigitalProduct digitalProduct;
+    physicalProduct = new PhysicalProduct("book2", "book", 1, 1.1, TaxType.NORMAL_TAX, 1.2, false);
 
-  @Test
-  public void setMessageToExistedItemShouldSuccess() {
-    // TODO: write test
-  }
+    digitalProduct = new DigitalProduct("Ebook2", "Ebook", 2, 1.2, TaxType.LUXURY_TAX, false);
+    shoppingCart.addItem(digitalProduct);
+    shoppingCart.addItem(physicalProduct);
 
-  @Test
-  public void setMessageToNotExistedItemShouldFail() {
-    // TODO: write test
+    assertFalse(shoppingCart.addItem(digitalProduct));
+    assertFalse(shoppingCart.addItem(physicalProduct));
   }
 
   @Test
   public void calculateCartAmountTest() {
-    // TODO: write test
+    assertEquals(0, shoppingCart.totalAmount());
   }
 }

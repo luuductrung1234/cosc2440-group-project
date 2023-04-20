@@ -24,7 +24,8 @@ public abstract class Product extends Domain<UUID> {
     this(UUID.randomUUID(), name, description, quantity, price, taxType, canUseAsGift);
   }
 
-  public Product(UUID id, String name, String description, int quantity, double price, TaxType taxType, boolean canUseAsGift) {
+  public Product(UUID id, String name, String description, int quantity, double price, TaxType taxType,
+      boolean canUseAsGift) {
     super(id);
     this.name = name;
     this.description = description;
@@ -76,4 +77,5 @@ public abstract class Product extends Domain<UUID> {
   public boolean canUseAsGift() {
     return canUseAsGift;
   }
+
 }
