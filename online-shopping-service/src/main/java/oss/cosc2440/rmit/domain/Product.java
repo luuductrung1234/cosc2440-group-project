@@ -134,4 +134,5 @@ public class Product extends Domain<UUID> {
   public boolean canUseAsGift() {
     return canUseAsGift;
   }
+
 }

@@ -18,15 +18,19 @@ public class CartItem extends Domain<UUID> implements Gift {
   private TaxType taxType;
   private int quantity;
   private String message;
+  private String couponCode;
+  private double applyTax;
 
   /**
    * Constructor
    */
-  public CartItem(UUID cartId, UUID productId, String productName, double productPrice, double productWeight, TaxType taxType, int quantity) {
+  public CartItem(UUID cartId, UUID productId, String productName, double productPrice, double productWeight,
+      TaxType taxType, int quantity) {
     this(UUID.randomUUID(), cartId, productId, productName, productPrice, productWeight, taxType, quantity);
   }
 
-  public CartItem(UUID id, UUID cartId, UUID productId, String productName, double productPrice, double productWeight, TaxType taxType, int quantity) {
+  public CartItem(UUID id, UUID cartId, UUID productId, String productName, double productPrice, double productWeight,
+      TaxType taxType, int quantity) {
     super(id);
     this.cartId = cartId;
     this.productId = productId;
@@ -35,6 +39,24 @@ public class CartItem extends Domain<UUID> implements Gift {
     this.productWeight = productWeight;
     this.taxType = taxType;
     this.quantity = quantity;
+  }
+
+  public CartItem(UUID id, UUID cartId, UUID productId, String productName, double productPrice, double productWeight,
+      TaxType taxType, int quantity, String couponCode) {
+    super(id);
+    this.cartId = cartId;
+    this.productId = productId;
+    this.productName = productName;
+    this.productPrice = productPrice;
+    this.productWeight = productWeight;
+    this.taxType = taxType;
+    this.quantity = quantity;
+    this.couponCode = couponCode;
+
+  }
+
+  public String getCouponCode() {
+    return this.couponCode;
   }
 
   public void increaseQuantity(int quantity) {
@@ -78,7 +100,13 @@ public class CartItem extends Domain<UUID> implements Gift {
   }
 
   public double getProductPrice() {
-    return productPrice;
+    if (taxType.equals("TAX_FREE")) {
+      return productPrice;
+    } else if (taxType.equals("NORMAL_TAX")) {
+      return productPrice + productPrice * 0.1;
+    } else {
+      return productPrice + productPrice * 0.2;
+    }
   }
 
   public double getProductWeight() {
