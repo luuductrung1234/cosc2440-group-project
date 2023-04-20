@@ -18,8 +18,7 @@ public class CartItem extends Domain<UUID> implements Gift {
   private TaxType taxType;
   private int quantity;
   private String message;
-  private String couponCode;
-  private double applyTax;
+  private String couponCode = "";
 
   /**
    * Constructor

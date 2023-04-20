@@ -12,7 +12,7 @@ public class ShoppingCart extends Domain<UUID> {
    * shopping cart attributes
    */
   private Set<CartItem> items = new HashSet<CartItem>();
-  private String couponCode;
+  private String couponCode = "";
   private String taxType;
   private Instant dateOfPurchase;
 
@@ -25,7 +25,8 @@ public class ShoppingCart extends Domain<UUID> {
   }
 
   public ShoppingCart(UUID id, Set<CartItem> items, Instant dateOfPurchase) {
-    // instant
+    // do we need date constructor parameter?
+    // I think it is better to make new calender here
     super(id);
     this.items = items;
 
@@ -61,7 +62,7 @@ public class ShoppingCart extends Domain<UUID> {
   public boolean addItem(Product product) {
     boolean result = true;
     for (CartItem cartItem : items) {
-      if (product.getId().equals(cartItem.getId())) {
+      if (product.getName().equals(cartItem.getProductName())) {
         result = false;
         break;
       }
@@ -87,7 +88,7 @@ public class ShoppingCart extends Domain<UUID> {
       }
 
     }
-    return true;
+    return false;
   }
 
   public double getPrice(CartItem cartItem) {
