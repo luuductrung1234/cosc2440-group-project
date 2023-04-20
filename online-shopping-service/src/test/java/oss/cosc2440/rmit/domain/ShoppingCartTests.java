@@ -37,8 +37,6 @@ public class ShoppingCartTests {
     physicalProduct = new PhysicalProduct("book2", "book", 1, 1.1, TaxType.NORMAL_TAX, 1.2, false);
 
     digitalProduct = new DigitalProduct("Ebook2", "Ebook", 2, 1.2, TaxType.LUXURY_TAX, false);
-    shoppingCart.addItem(digitalProduct);
-    shoppingCart.addItem(physicalProduct);
 
     assertTrue(shoppingCart.addItem(digitalProduct));
     assertTrue(shoppingCart.addItem(physicalProduct));
@@ -53,9 +51,6 @@ public class ShoppingCartTests {
 
     digitalProduct = new DigitalProduct("Ebook1", "Ebook", 2, 1.2, TaxType.LUXURY_TAX, false);
 
-    shoppingCart.addItem(digitalProduct);
-    shoppingCart.addItem(physicalProduct);
-
     assertFalse(shoppingCart.addItem(digitalProduct));
     assertFalse(shoppingCart.addItem(physicalProduct));
 
@@ -63,36 +58,21 @@ public class ShoppingCartTests {
 
   @Test
   public void removeExistedItemShouldSuccess() {
-    PhysicalProduct physicalProduct;
-    DigitalProduct digitalProduct;
-    physicalProduct = new PhysicalProduct("book1", "book", 1, 1.1, TaxType.NORMAL_TAX, 1.2, false);
 
-    digitalProduct = new DigitalProduct("Ebook1", "Ebook", 2, 1.2, TaxType.LUXURY_TAX, false);
-
-    shoppingCart.addItem(digitalProduct);
-    shoppingCart.addItem(physicalProduct);
-
-    assertTrue(shoppingCart.addItem(digitalProduct));
-    assertTrue(shoppingCart.addItem(physicalProduct));
+    assertTrue(shoppingCart.removeItem("book1"));
+    assertTrue(shoppingCart.removeItem("Ebook1"));
 
   }
 
   @Test
   public void removeNotExistedItemShouldFail() {
-    PhysicalProduct physicalProduct;
-    DigitalProduct digitalProduct;
-    physicalProduct = new PhysicalProduct("book2", "book", 1, 1.1, TaxType.NORMAL_TAX, 1.2, false);
 
-    digitalProduct = new DigitalProduct("Ebook2", "Ebook", 2, 1.2, TaxType.LUXURY_TAX, false);
-    shoppingCart.addItem(digitalProduct);
-    shoppingCart.addItem(physicalProduct);
-
-    assertFalse(shoppingCart.addItem(digitalProduct));
-    assertFalse(shoppingCart.addItem(physicalProduct));
+    assertFalse(shoppingCart.removeItem("Ebook2"));
+    assertFalse(shoppingCart.removeItem("book2"));
   }
 
   @Test
   public void calculateCartAmountTest() {
-    assertEquals(0, shoppingCart.totalAmount());
+    assertEquals(0.828, shoppingCart.totalAmount());
   }
 }
