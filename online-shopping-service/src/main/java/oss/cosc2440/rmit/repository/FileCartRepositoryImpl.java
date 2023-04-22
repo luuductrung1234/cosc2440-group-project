@@ -13,7 +13,7 @@ public class FileCartRepositoryImpl extends BaseFileRepository implements CartRe
 
   private final ProductRepository productRepository;
 
-  public FileCartRepositoryImpl(String pathToDataFile) {
+  public FileCartRepositoryImpl(String pathToDataFile, ProductRepository productRepository) {
     super(pathToDataFile);
     this.productRepository = productRepository;
   }
