@@ -13,11 +13,12 @@ public class FileCartRepositoryImpl extends BaseFileRepository implements CartRe
 
   private final ProductRepository productRepository;
 
-  public FileCartRepositoryImpl(String pathToDataFile, ProductRepository productRepository) {
+  public FileCartRepositoryImpl(String pathToDataFile) {
     super(pathToDataFile);
     this.productRepository = productRepository;
   }
 
+  // Method to list all shopping carts stored in the data file
   @Override
   public List<ShoppingCart> listAll() {
     List<ShoppingCart> carts = new ArrayList<>();
@@ -29,6 +30,7 @@ public class FileCartRepositoryImpl extends BaseFileRepository implements CartRe
         String couponCode = values[1];
         Instant dateOfPurchase = Instant.parse(values[2]);
 
+        // Create a set of cart items for each shopping cart
         Set<CartItem> items = new HashSet<>();
         for (int i = 3; i < values.length; i += 4) {
           UUID productId = UUID.fromString(values[i]);
@@ -40,17 +42,21 @@ public class FileCartRepositoryImpl extends BaseFileRepository implements CartRe
           ProductType productType = product.getType();
           int weight = productType == ProductType.PHYSICAL ? ((int) Math.round(Double.parseDouble(values[i + 3]))) : 0;
 
+          // Add the cart item to the set of items for the current shopping cart
           items.add(new CartItem(productId, productName, price, quantity, productType, weight));
         }
+        // Create a new shopping cart object with the extracted data and add it to the list of carts
         ShoppingCart cart = new ShoppingCart(cartId, items, couponCode, dateOfPurchase);
         carts.add(cart);
       }
     } catch (IOException e) {
+      // If there is an error reading from the data file, print an error message
       System.out.println("Failed to read from data file: " + getDataFile().getAbsolutePath());
     }
     return carts;
   }
 
+  // Method to find a shopping cart by its ID
   @Override
   public Optional<ShoppingCart> findById(UUID id) {
     try (BufferedReader reader = new BufferedReader(new FileReader(getDataFile()))) {
@@ -85,6 +91,7 @@ public class FileCartRepositoryImpl extends BaseFileRepository implements CartRe
     return Optional.empty();
   }
 
+  // Method to save a shopping cart to the data file
   @Override
   public boolean add(ShoppingCart cart) {
     try (BufferedWriter writer = new BufferedWriter(new FileWriter(getDataFile(), true))) {
