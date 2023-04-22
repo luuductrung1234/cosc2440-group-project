@@ -4,6 +4,7 @@ import oss.cosc2440.rmit.domain.PhysicalProduct;
 import oss.cosc2440.rmit.domain.Product;
 import oss.cosc2440.rmit.domain.ProductType;
 import oss.cosc2440.rmit.domain.ShoppingCart;
+import oss.cosc2440.rmit.domain.TaxType;
 import oss.cosc2440.rmit.model.CreateProductModel;
 import oss.cosc2440.rmit.model.SearchProductParameters;
 import oss.cosc2440.rmit.model.UpdateProductModel;
@@ -157,6 +158,21 @@ public class MenuService {
       if (model.getType().equals(ProductType.PHYSICAL)) {
         Helpers.requestDoubleInput(scanner, "Enter product weight: ", "weight", model);
       }
+      
+      Helpers.requestSelectValue(scanner, "Select tax type: ",
+          new ArrayList<>() {
+            {
+              add(new ValueOption<>(TaxType.TAX_FREE.toString(), TaxType.TAX_FREE));
+            }
+            {
+              add(new ValueOption<>(TaxType.NORMAL_TAX.toString(), TaxType.NORMAL_TAX));
+            }
+            {
+              add(new ValueOption<>(TaxType.LUXURY_TAX.toString(), TaxType.LUXURY_TAX));
+            }
+          }, "taxType", model);
+      
+      Helpers.requestBoolInput(scanner, "Can the product be used as gift?: ", "canUseAsGift", model);
 
       if (productService.addProduct(model))
         Logger.printSuccess("Add new product successfully!");
@@ -174,6 +190,8 @@ public class MenuService {
 
       // not support edit product's name
       model.setName(product.getName());
+      model.setType(product.getType());
+
       Logger.printInfo("Editing product: %s", product.getName());
 
       Logger.printInfo(String.format("Old description: %s", product.getDescription()));
@@ -190,6 +208,27 @@ public class MenuService {
       Helpers.requestIntInput(scanner, "Enter product quantity: ", "quantity", model);
       if (model.getQuantity() == null)
         model.setQuantity(product.getQuantity());
+      
+      Logger.printInfo(String.format("Old tax type : %s", product.getTaxType()));
+      Helpers.requestSelectValue(scanner, "Select tax type: ",
+          new ArrayList<>() {
+            {
+              add(new ValueOption<>(TaxType.TAX_FREE.toString(), TaxType.TAX_FREE));
+            }
+            {
+              add(new ValueOption<>(TaxType.NORMAL_TAX.toString(), TaxType.NORMAL_TAX));
+            }
+            {
+              add(new ValueOption<>(TaxType.LUXURY_TAX.toString(), TaxType.LUXURY_TAX));
+            }
+          }, "taxType", model);
+      if (model.getTaxType() == null){
+        model.setTaxType(product.getTaxType());
+      }
+      
+      Logger.printInfo(String.format("Can be used as gift: %s", product.canUseAsGift()));
+      model.setCanUseAsGift(product.canUseAsGift());
+      Helpers.requestBoolInput(scanner, "Can the product be used as gift?: ", "canUseAsGift", model);
 
       if (product.getType().equals(ProductType.PHYSICAL)) {
         Logger.printInfo(String.format("Old weight: %.2f", ((PhysicalProduct) product).getWeight()));
