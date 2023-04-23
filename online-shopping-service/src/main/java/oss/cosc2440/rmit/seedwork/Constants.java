@@ -1,6 +1,12 @@
 package oss.cosc2440.rmit.seedwork;
 
+import oss.cosc2440.rmit.domain.ProductType;
+import oss.cosc2440.rmit.domain.TaxType;
+import oss.cosc2440.rmit.model.ProductSort;
+
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Luu Duc Trung - S3951127
@@ -15,6 +21,48 @@ public class Constants {
   public static final int TAX_FREE_AMOUNT = 0;
   public static final int NORMAL_TAX_AMOUNT = 10;
   public static final int LUXURY_TAX_AMOUNT = 20;
+
+  public static final List<ValueOption<ProductType>> PRODUCT_TYPE_OPTIONS = new ArrayList<>() {
+    {
+      add(new ValueOption<>(ProductType.DIGITAL.toString(), ProductType.DIGITAL));
+    }
+
+    {
+      add(new ValueOption<>(ProductType.PHYSICAL.toString(), ProductType.PHYSICAL));
+    }
+  };
+
+  public static final List<ValueOption<TaxType>> TAX_TYPE_OPTIONS = new ArrayList<>() {
+    {
+      add(new ValueOption<>(TaxType.TAX_FREE.toString(), TaxType.TAX_FREE));
+    }
+
+    {
+      add(new ValueOption<>(TaxType.NORMAL_TAX.toString(), TaxType.NORMAL_TAX));
+    }
+
+    {
+      add(new ValueOption<>(TaxType.LUXURY_TAX.toString(), TaxType.LUXURY_TAX));
+    }
+  };
+
+  public static final List<ValueOption<ProductSort>> PRODUCT_SORT_OPTIONS = new ArrayList<>() {
+    {
+      add(new ValueOption<>(ProductSort.NameAscending.toString(), ProductSort.NameAscending));
+    }
+
+    {
+      add(new ValueOption<>(ProductSort.NameDescending.toString(), ProductSort.NameDescending));
+    }
+
+    {
+      add(new ValueOption<>(ProductSort.PriceAscending.toString(), ProductSort.PriceAscending));
+    }
+
+    {
+      add(new ValueOption<>(ProductSort.PriceDescending.toString(), ProductSort.PriceDescending));
+    }
+  };
 
   /**
    * ANSI color codes

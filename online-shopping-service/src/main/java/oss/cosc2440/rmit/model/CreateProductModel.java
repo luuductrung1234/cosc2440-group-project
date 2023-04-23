@@ -35,7 +35,7 @@ public class CreateProductModel {
   private TaxType taxType;
 
   @NotNull(message = "Given choice must not be null")
-  private boolean canUseAsGift;
+  private Boolean canUseAsGift;
 
   public String getName() {
     return name;
@@ -93,7 +93,11 @@ public class CreateProductModel {
     this.taxType = type;
   }
 
-  public boolean canUseAsGift() {
+  public Boolean canUseAsGift() {
     return canUseAsGift;
+  }
+
+  public void setCanUseAsGift(Boolean canUseAsGift) {
+    this.canUseAsGift = canUseAsGift;
   }
 }

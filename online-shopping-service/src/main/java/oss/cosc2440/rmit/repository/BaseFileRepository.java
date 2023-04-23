@@ -18,7 +18,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 public abstract class BaseFileRepository {
-    protected final String pathToDataFile;
+    private final String pathToDataFile;
 
     public BaseFileRepository(String pathToDataFile) {
         this.pathToDataFile = pathToDataFile;

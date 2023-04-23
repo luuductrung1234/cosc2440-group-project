@@ -7,7 +7,12 @@ import oss.cosc2440.rmit.seedwork.constraint.GreaterThan;
 import oss.cosc2440.rmit.seedwork.constraint.Length;
 import oss.cosc2440.rmit.seedwork.constraint.NotNull;
 
+import java.util.UUID;
+
 public class UpdateProductModel {
+  @NotNull
+  private UUID id;
+
   @NotNull
   @Length(max = 100, min = 1, message = "Given name must have valid length between 1 and 100 characters.")
   private String name;
@@ -31,7 +36,15 @@ public class UpdateProductModel {
   private TaxType taxType;
 
   @NotNull(message = "Given choice must not be null")
-  private boolean canUseAsGift;
+  private Boolean canUseAsGift;
+
+  public UUID getId() {
+    return id;
+  }
+
+  public void setId(UUID id) {
+    this.id = id;
+  }
 
   public String getName() {
     return name;
@@ -81,19 +94,19 @@ public class UpdateProductModel {
     this.type = type;
   }
 
-  public TaxType getTaxType(){
+  public TaxType getTaxType() {
     return taxType;
   }
 
-  public void setTaxType(TaxType type){
+  public void setTaxType(TaxType type) {
     this.taxType = type;
   }
 
-  public boolean canUseAsGift() {
+  public Boolean canUseAsGift() {
     return canUseAsGift;
   }
 
-  public void setCanUseAsGift(boolean val){
+  public void setCanUseAsGift(Boolean val) {
     this.canUseAsGift = val;
   }
 }
