@@ -11,6 +11,8 @@ public interface ProductRepository {
 
   Optional<Product> findById(UUID id);
 
+  Optional<Product> findByName(String name);
+
   boolean add(Product product);
 
   boolean update(Product product);

@@ -2,6 +2,7 @@ package oss.cosc2440.rmit;
 
 import oss.cosc2440.rmit.repository.*;
 import oss.cosc2440.rmit.seedwork.Constants;
+import oss.cosc2440.rmit.seedwork.Logger;
 import oss.cosc2440.rmit.service.*;
 
 import java.util.Objects;
@@ -11,11 +12,28 @@ import java.util.Objects;
  */
 public class Main {
   public static void main(String[] args) {
+    ClassLoader loader = Main.class.getClassLoader();
+
+    if(loader.getResource(Constants.PRODUCT_FILE_NAME) == null) {
+      Logger.printWarning("Not found data file %s", Constants.PRODUCT_FILE_NAME);
+      return;
+    }
+
     ProductRepository productRepository = new FileProductRepositoryImpl(
-        Objects.requireNonNull(Main.class.getClassLoader().getResource(Constants.PRODUCT_FILE_NAME)).getPath());
+        Objects.requireNonNull(loader.getResource(Constants.PRODUCT_FILE_NAME)).getPath());
+
+    if(loader.getResource(Constants.CART_FILE_NAME) == null) {
+      Logger.printWarning("Not found data file %s", Constants.CART_FILE_NAME);
+      return;
+    }
 
     CartRepository cartRepository = new FileCartRepositoryImpl(
         Objects.requireNonNull(Main.class.getClassLoader().getResource(Constants.CART_FILE_NAME)).getPath());
+
+    if(loader.getResource(Constants.COUPON_FILE_NAME) == null) {
+      Logger.printWarning("Not found data file %s", Constants.COUPON_FILE_NAME);
+      return;
+    }
 
     CouponRepository couponRepository = new FileCouponRepositoryImpl(
         Objects.requireNonNull(Main.class.getClassLoader().getResource(Constants.COUPON_FILE_NAME)).getPath());

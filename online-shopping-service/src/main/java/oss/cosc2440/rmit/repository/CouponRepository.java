@@ -10,4 +10,8 @@ public interface CouponRepository {
   List<Coupon> listAll();
 
   Optional<Coupon> findById(UUID id);
+
+  Optional<Coupon> findByCode(String code);
+
+  Optional<Coupon> findByProductId(UUID productId);
 }

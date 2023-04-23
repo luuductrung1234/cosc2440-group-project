@@ -34,17 +34,6 @@ public class Helpers {
     return str == null || str.trim().isEmpty();
   }
 
-  public static void loopAction(Scanner scanner, Supplier<Boolean> action) {
-    while (true) {
-      if (action.get())
-        break;
-      Boolean answer = Helpers.requestBooleanInput(scanner, "Do you want to continue? [y/n]: ");
-      if (answer)
-        continue;
-      break;
-    }
-  }
-
   /**
    * Convert bigDecimal to String with VND format
    */
@@ -70,6 +59,17 @@ public class Helpers {
       return includeCurrency ? String.format("%,.0f (%s)", value, currency) : String.format("%,.0f", value);
     }
     return includeCurrency ? String.format("%.2f (%s)", value, currency) : String.format("%.2f", value);
+  }
+
+  public static void loopAction(Scanner scanner, Supplier<Boolean> action) {
+    while (true) {
+      if (action.get())
+        break;
+      Boolean answer = Helpers.requestBooleanInput(scanner, "Do you want to continue? [y/n]: ");
+      if (answer)
+        continue;
+      break;
+    }
   }
 
   public static <TOption extends InputOption> Optional<TOption> requestSelect(Scanner scanner, String label, List<TOption> options, int maxCol) {

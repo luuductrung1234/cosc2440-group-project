@@ -1,11 +1,18 @@
 package oss.cosc2440.rmit.model;
 
+import oss.cosc2440.rmit.domain.ProductType;
+import oss.cosc2440.rmit.domain.TaxType;
 import oss.cosc2440.rmit.seedwork.constraint.GreaterOrEqual;
 import oss.cosc2440.rmit.seedwork.constraint.GreaterThan;
 import oss.cosc2440.rmit.seedwork.constraint.Length;
 import oss.cosc2440.rmit.seedwork.constraint.NotNull;
 
+import java.util.UUID;
+
 public class UpdateProductModel {
+  @NotNull
+  private UUID id;
+
   @NotNull
   @Length(max = 100, min = 1, message = "Given name must have valid length between 1 and 100 characters.")
   private String name;
@@ -21,6 +28,23 @@ public class UpdateProductModel {
 
   @GreaterThan(value = 0, message = "Given weight must be greater than 0")
   private Double weight;
+
+  @NotNull(message = "Given type must not be null")
+  private ProductType type;
+
+  @NotNull(message = "Given type must not be null")
+  private TaxType taxType;
+
+  @NotNull(message = "Given choice must not be null")
+  private Boolean canUseAsGift;
+
+  public UUID getId() {
+    return id;
+  }
+
+  public void setId(UUID id) {
+    this.id = id;
+  }
 
   public String getName() {
     return name;
@@ -60,5 +84,29 @@ public class UpdateProductModel {
 
   public void setWeight(Double weight) {
     this.weight = weight;
+  }
+
+  public ProductType getType() {
+    return type;
+  }
+
+  public void setType(ProductType type) {
+    this.type = type;
+  }
+
+  public TaxType getTaxType() {
+    return taxType;
+  }
+
+  public void setTaxType(TaxType type) {
+    this.taxType = type;
+  }
+
+  public Boolean canUseAsGift() {
+    return canUseAsGift;
+  }
+
+  public void setCanUseAsGift(Boolean val) {
+    this.canUseAsGift = val;
   }
 }

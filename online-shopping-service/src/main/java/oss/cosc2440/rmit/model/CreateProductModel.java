@@ -1,6 +1,7 @@
 package oss.cosc2440.rmit.model;
 
 import oss.cosc2440.rmit.domain.ProductType;
+import oss.cosc2440.rmit.domain.TaxType;
 import oss.cosc2440.rmit.seedwork.constraint.GreaterOrEqual;
 import oss.cosc2440.rmit.seedwork.constraint.GreaterThan;
 import oss.cosc2440.rmit.seedwork.constraint.Length;
@@ -29,6 +30,12 @@ public class CreateProductModel {
   @NotNull(message = "Given weight must not be null")
   @GreaterThan(value = 0, message = "Given weight must be greater than 0")
   private Double weight;
+
+  @NotNull(message = "Given type must not be null")
+  private TaxType taxType;
+
+  @NotNull(message = "Given choice must not be null")
+  private Boolean canUseAsGift;
 
   public String getName() {
     return name;
@@ -76,5 +83,21 @@ public class CreateProductModel {
 
   public void setWeight(Double weight) {
     this.weight = weight;
+  }
+
+  public TaxType getTaxType(){
+    return taxType;
+  }
+
+  public void setTaxType(TaxType type){
+    this.taxType = type;
+  }
+
+  public Boolean canUseAsGift() {
+    return canUseAsGift;
+  }
+
+  public void setCanUseAsGift(Boolean canUseAsGift) {
+    this.canUseAsGift = canUseAsGift;
   }
 }

@@ -60,7 +60,7 @@ public class ShoppingCart extends Domain<UUID> {
     if (itemOpt.isEmpty()) return;
     CartItem item = itemOpt.get();
     if (product.getType() == ProductType.PHYSICAL) {
-      item.syncProductInfo(product.getName(), product.getPrice(), ((PhysicalProduct) product).getWeight(), product.getTaxType());
+      item.syncProductInfo(product.getName(), product.getPrice(), product.getWeight(), product.getTaxType());
     } else {
       item.syncProductInfo(product.getName(), product.getPrice(), 0, product.getTaxType());
     }
