@@ -55,11 +55,11 @@ public class CartService {
     cart.purchase();
   }
 
-  public void print(ShoppingCart cart) {
+  private void print(ShoppingCart cart) {
     // TODO: print to console
   }
 
-  public void printToFile(ShoppingCart cart) {
+  private void printToFile(ShoppingCart cart) {
     // TODO: print to file
   }
 }

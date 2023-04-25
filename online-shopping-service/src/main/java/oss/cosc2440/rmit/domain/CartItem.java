@@ -84,6 +84,7 @@ public class CartItem extends Domain<UUID> implements Gift, Splittable<CartItem>
   }
 
   public BigDecimal getItemCouponAmount() {
+    if (couponType == null) return BigDecimal.ZERO;
     BigDecimal couponAmount = BigDecimal.ZERO;
     switch (this.couponType) {
       case PRICE:

@@ -1,5 +1,6 @@
 package oss.cosc2440.rmit.domain;
 
+import oss.cosc2440.rmit.seedwork.Constants;
 import oss.cosc2440.rmit.seedwork.Helpers;
 
 import java.math.BigDecimal;
@@ -39,8 +40,13 @@ public class ShoppingCart extends Domain<UUID> {
     return this.items.stream().mapToDouble(CartItem::getItemWeight).sum();
   }
 
+  public double shippingFee() {
+    return totalWeight() * Constants.BASE_FEE;
+  }
+
   public BigDecimal totalAmount() {
-    return this.items.stream().map(CartItem::getItemPrice).reduce(BigDecimal.ZERO, BigDecimal::add);
+    BigDecimal totalAmount = this.items.stream().map(CartItem::getItemPrice).reduce(BigDecimal.ZERO, BigDecimal::add);
+    return totalAmount.add(BigDecimal.valueOf(shippingFee()));
   }
 
   /**
@@ -124,6 +130,25 @@ public class ShoppingCart extends Domain<UUID> {
     return true;
   }
 
+  public boolean setGiftMessage(UUID cartId, String message) {
+    Optional<CartItem> itemOpt = this.items.stream()
+        .filter(i -> i.getId().equals(cartId)).findFirst();
+    if (itemOpt.isEmpty())
+      return false;
+
+    CartItem item = itemOpt.get();
+    if(item.getQuantity() == 1)
+    {
+      item.setMessage(message);
+      return true;
+    }
+
+    CartItem splitItem = item.split();
+    splitItem.setMessage(message);
+    this.items.add(splitItem);
+    return true;
+  }
+
   public List<CartItem> getItemsAppliedCoupon() {
     return this.items.stream().filter(CartItem::appliedCoupon).collect(Collectors.toList());
   }
@@ -172,8 +197,7 @@ public class ShoppingCart extends Domain<UUID> {
   }
 
   public void purchase() {
-    if (isPurchased())
-      throw new IllegalStateException("Shopping cart already purchased");
+    if (isPurchased()) return;
     dateOfPurchase = Instant.now();
   }
 
@@ -200,7 +224,7 @@ public class ShoppingCart extends Domain<UUID> {
   }
 
   // Getter & Setter methods
-  public Collection<CartItem> getItems() {
+  public List<CartItem> getItems() {
     return this.items;
   }
 

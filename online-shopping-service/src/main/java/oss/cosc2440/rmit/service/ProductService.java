@@ -75,6 +75,14 @@ public class ProductService {
     return coupons.stream().filter(c -> c.getTargetProduct().equals(productId)).collect(Collectors.toList());
   }
 
+  public boolean couponExist(String code) {
+    return coupons.stream().anyMatch(c -> c.getCode().equalsIgnoreCase(code));
+  }
+
+  public Optional<Coupon> findCoupon(String code) {
+    return coupons.stream().filter(c -> c.getCode().equalsIgnoreCase(code)).findFirst();
+  }
+
   public boolean isExisted(String name) {
     return products.stream().anyMatch(p -> p.getName().equals(name));
   }
