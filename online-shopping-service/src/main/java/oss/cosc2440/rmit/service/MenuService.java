@@ -47,15 +47,166 @@ public class MenuService {
   }
 
   public void showCartScreen() {
-    // TODO: implement showCartScreen
+    AtomicBoolean goBack = new AtomicBoolean(false);
+    do {
+      banner("current cart");
+
+      System.out.printf("%-15s: %.2f\n", "Weight", currentCart.totalWeight());
+      System.out.printf("%-15s: %d\n", "Quantity", currentCart.totalQuantity());
+
+      List<CartItem> itemsAppliedCoupon = currentCart.getItemsAppliedCoupon();
+      if (!itemsAppliedCoupon.isEmpty()) {
+        System.out.printf("%-15s: %s\n", "Coupon", itemsAppliedCoupon.stream().findFirst().get().getCouponCode());
+        System.out.printf("%-15s: -%s\n", "Coupon Value", Helpers.toString(itemsAppliedCoupon.stream().mapToDouble(CartItem::getCouponValue).sum(), "USD", true));
+      }
+
+      System.out.printf("%-15s: %s\n\n", "Shipping Fee", Helpers.toString(currentCart.shippingFee(), "USD", true));
+      System.out.printf("%-15s: %s\n\n", "Total Amount", Helpers.toString(currentCart.totalAmount()));
+
+      System.out.printf("%-7s %-35s %-20s %-20s %-20s %-20s\n", "No.", "name", "quantity", "price", "weight", "message");
+      System.out.println("-".repeat(120));
+      if (currentCart.getItems().isEmpty())
+        Logger.printInfo("Cart is empty...");
+      for (int itemNo = 0; itemNo < currentCart.getItems().size(); itemNo++) {
+        CartItem item = currentCart.getItems().get(itemNo);
+        System.out.printf("%-7s %-35s %-20s %-20s %-20s %-20s\n", itemNo, item.getProductName(),
+            item.getQuantity(), Helpers.toString(item.getProductPrice(), "USD", true),
+            item.getProductWeight(), Helpers.isNullOrEmpty(item.getMessage()) ? "-" : item.getMessage());
+      }
+
+      List<ActionOption<Runnable>> actionOptions = new ArrayList<>();
+
+      if (!currentCart.getItems().isEmpty()) {
+        actionOptions.add(new ActionOption<>("add item", () -> {
+          int itemNo = Helpers.requestIntInput(scanner, "Enter item No. to add: ", (value) -> {
+            if (value < 0 || value >= currentCart.getItems().size()) {
+              return ValidationResult.inValidInstance("Given item No. is out of index.");
+            }
+            return ValidationResult.validInstance();
+          });
+
+          CartItem item = currentCart.getItems().get(itemNo);
+          Product product = productService.findById(item.getProductId()).orElseThrow();
+
+          int quantity = Helpers.requestIntInput(scanner, "Enter quantity to add: ", (value) -> {
+            if (value < 0 || value > product.getQuantity()) {
+              return ValidationResult.inValidInstance(String.format("Given quantity must >= 0 and <= product quantity (remaining %d items in stock).", product.getQuantity()));
+            }
+            return ValidationResult.validInstance();
+          });
+
+          if (!currentCart.addItem(item.getId(), product, quantity))
+            Logger.printWarning("fail to add item to cart!");
+        }));
+        actionOptions.add(new ActionOption<>("remove item", () -> {
+          int itemNo = Helpers.requestIntInput(scanner, "Enter item No. to remove: ", (value) -> {
+            if (value < 0 || value >= currentCart.getItems().size()) {
+              return ValidationResult.inValidInstance("Given item No. is out of index.");
+            }
+            return ValidationResult.validInstance();
+          });
+
+          CartItem item = currentCart.getItems().get(itemNo);
+          Product product = productService.findById(item.getProductId()).orElseThrow();
+
+          int quantity = Helpers.requestIntInput(scanner, "Enter quantity to remove: ", (value) -> {
+            if (value < 0) {
+              return ValidationResult.inValidInstance("Given quantity must >= 0.");
+            }
+            return ValidationResult.validInstance();
+          });
+
+          if (!currentCart.removeItem(item.getId(), product, quantity))
+            Logger.printWarning("fail to remove item to cart!");
+        }));
+        actionOptions.add(new ActionOption<>("apply coupon", () -> {
+          String couponCode = Helpers.requestStringInput(scanner, "Enter coupon code: ", (value) -> {
+            if (Helpers.isNullOrEmpty(value) || !productService.couponExist(value))
+              return ValidationResult.inValidInstance("Coupon not found!");
+            return ValidationResult.validInstance();
+          });
+
+          Coupon coupon = productService.findCoupon(couponCode).orElseThrow();
+          if (!currentCart.applyCoupon(coupon))
+            Logger.printWarning("fail to apply coupon!");
+        }));
+        actionOptions.add(new ActionOption<>("clear coupon", () -> {
+          Boolean isClear = Helpers.requestBooleanInput(scanner, "Do you want to continue? [y/n]: ");
+          if (isClear) {
+            currentCart.clearAppliedCoupon();
+          }
+        }));
+        actionOptions.add(new ActionOption<>("purchase as gift", () -> {
+          int itemNo = Helpers.requestIntInput(scanner, "Enter item No. to set message: ", (value) -> {
+            if (value < 0 || value >= currentCart.getItems().size()) {
+              return ValidationResult.inValidInstance("Given item No. is out of index.");
+            }
+            return ValidationResult.validInstance();
+          });
+
+          CartItem item = currentCart.getItems().get(itemNo);
+          Product product = productService.findById(item.getProductId()).orElseThrow();
+
+          if (!product.canUseAsGift())
+            Logger.printWarning("This product can not purchase as gift!");
+
+          String message = Helpers.requestStringInput(scanner, "Enter gift message: ", (value) -> {
+            if (Helpers.isNullOrEmpty(value))
+              return ValidationResult.inValidInstance("Gift message is not valid!");
+            return ValidationResult.validInstance();
+          });
+
+          if (!currentCart.setGiftMessage(item.getId(), message))
+            Logger.printWarning("fail to set gift message!");
+        }));
+        actionOptions.add(new ActionOption<>("submit", () -> {
+          Boolean isSave = Helpers.requestBooleanInput(scanner, "Do you want to continue? [y/n]: ");
+          if (isSave) {
+            cartService.submit(currentCart);
+            currentCart = new ShoppingCart();
+          }
+        }));
+      }
+
+      addCommonActions(actionOptions, goBack);
+      Helpers.requestSelectAction(scanner, "Your choice [0-" + (actionOptions.size() - 1) + "]: ", actionOptions);
+    } while (!goBack.get());
   }
 
   public void listCartsScreen() {
-    // TODO: implement listCartsScreen
-  }
+    AtomicBoolean goBack = new AtomicBoolean(false);
+    do {
+      banner("carts");
+      List<ShoppingCart> carts = cartService.listAll();
 
-  public void cartDetailScreen(UUID cartId) {
-    // TODO: implement cartDetailScreen
+      System.out.printf("%-7s %-37s %-20s %-15s %-15s %-20s\n", "No.", "Id", "total amount", "quantity", "weight", "date of purchase");
+      System.out.println("-".repeat(120));
+      if (carts.isEmpty())
+        Logger.printInfo("No cart found...");
+      for (int cartNo = 0; cartNo < carts.size(); cartNo++) {
+        ShoppingCart cart = carts.get(cartNo);
+        System.out.printf("%-7s %-37s %-20s %-15d %-15.2f %-20s\n", cartNo, cart.getId(),
+            Helpers.toString(cart.totalAmount()), cart.totalQuantity(),
+            cart.totalWeight(), Helpers.toString(cart.getDateOfPurchase()));
+      }
+
+      List<ActionOption<Runnable>> actionOptions = new ArrayList<>() {{
+        add(new ActionOption<>("print receipt", () -> {
+          int cartNo = Helpers.requestIntInput(scanner, "Enter cart No. to print receipt: ", (value) -> {
+            if (value < 0 || value >= carts.size()) {
+              return ValidationResult.inValidInstance("Given cart No. is out of index.");
+            }
+            return ValidationResult.validInstance();
+          });
+
+          Boolean printToFile = Helpers.requestBooleanInput(scanner, "Do you want to print to file? [y/n]: ");
+          cartService.printReceipt(carts.get(cartNo), printToFile);
+        }));
+      }};
+
+      addCommonActions(actionOptions, goBack);
+      Helpers.requestSelectAction(scanner, "Your choice [0-" + (actionOptions.size() - 1) + "]: ", actionOptions);
+    } while (!goBack.get());
   }
 
   public void listProductsScreen() {
@@ -64,13 +215,18 @@ public class MenuService {
     do {
       banner("products");
       List<Product> products = productService.listAll(searchParameters.get());
-      System.out.printf("search by \n\t " +
-              "name: %-20s \n\t " +
-              "type: %-20s \n\t " +
-              "tax: %-20s\n\n",
+      System.out.printf("search by\n\t " +
+              "name: %-20s\n\t " +
+              "type: %-20s\n\t " +
+              "tax: %-20s\n\t" +
+              "from: %-20s to: %-20s\n\t" +
+              "sort by: %-20s\n\n",
           Helpers.isNullOrEmpty(searchParameters.get().getName()) ? "n/a" : searchParameters.get().getName(),
           searchParameters.get().getType() == null ? "n/a" : searchParameters.get().getType(),
-          searchParameters.get().getTaxType() == null ? "n/a" : searchParameters.get().getTaxType());
+          searchParameters.get().getTaxType() == null ? "n/a" : searchParameters.get().getTaxType(),
+          searchParameters.get().getFromPrice() == null ? "n/a" : searchParameters.get().getFromPrice(),
+          searchParameters.get().getToPrice() == null ? "n/a" : searchParameters.get().getToPrice(),
+          searchParameters.get().getSortedBy() == null ? "n/a" : searchParameters.get().getSortedBy());
 
       System.out.printf("%-7s %-35s %-10s %-20s %-45s %10s\n", "No.", "name", "quantity", "price", "description", "weight");
       System.out.println("-".repeat(140));
@@ -114,6 +270,16 @@ public class MenuService {
           });
           productDetailScreen(products.get(productNo).getId());
         }));
+        add(new ActionOption<>("add to cart", () -> {
+          int productNo = Helpers.requestIntInput(scanner, "Enter product No. to add to cart: ", (value) -> {
+            if (value < 0 || value >= products.size()) {
+              return ValidationResult.inValidInstance("Given product No. is out of index.");
+            }
+            return ValidationResult.validInstance();
+          });
+          currentCart.addItem(products.get(productNo), 1);
+          Logger.printSuccess("Add item to cart successfully!");
+        }));
         add(new ActionOption<>("create product", () -> createProductScreen()));
         add(new ActionOption<>("edit product", () -> {
           int productNo = Helpers.requestIntInput(scanner, "Enter product No. to edit: ", (value) -> {
@@ -138,7 +304,7 @@ public class MenuService {
       Optional<Product> productOpt = productService.findById(productId);
       if (productOpt.isEmpty())
         throw new IllegalStateException("Product with id: " + productId + " not found!");
-      Optional<Coupon> couponOpt = productService.findCoupon(productId);
+      List<Coupon> coupons = productService.findCoupon(productId);
 
       Product product = productOpt.get();
       System.out.printf("%-16s: %-10s \n", "Id", product.getId());
@@ -152,21 +318,35 @@ public class MenuService {
         System.out.printf("%-16s: %-10s \n", "Weight", "n/a");
       System.out.printf("%-16s: %-10s \n", "Can use as gift", product.canUseAsGift() ? "yes" : "no");
 
-      if (couponOpt.isPresent()) {
-        Coupon coupon = couponOpt.get();
-        System.out.println("\nCoupon");
-        System.out.printf("\t%-12s: %-10s \n", "Code", coupon.getCode());
-        System.out.printf("\t%-12s: -%s \n", "Value", coupon.getType().equals(CouponType.PRICE)
-            ? Helpers.toString(coupon.getValue(), "USD", true)
-            : coupon.getValue() + "%");
+      System.out.println("\nCoupon");
+      if (coupons.isEmpty())
+        Logger.printInfo("This product has no coupon...");
+      for (int couponNo = 0; couponNo < coupons.size(); couponNo++) {
+        Coupon coupon = coupons.get(couponNo);
+        System.out.printf("\t[%d] %-6s: %-10s, %-6s: -%-15s\n", couponNo, "Code", coupon.getCode(),
+            "Value", coupon.getType().equals(CouponType.PRICE)
+                ? Helpers.toString(coupon.getValue(), "USD", true)
+                : coupon.getValue() + "%");
       }
 
       List<ActionOption<Runnable>> actionOptions = new ArrayList<>() {{
         add(new ActionOption<>("edit product", () -> editProductScreen(product)));
         add(new ActionOption<>("add to cart", () -> {
-          // TODO: add to cart
+          currentCart.addItem(product, 1);
           Logger.printSuccess("Add item to cart successfully!");
           goBack.set(true);
+        }));
+        add(new ActionOption<>("use coupon", () -> {
+          int couponNo = Helpers.requestIntInput(scanner, "Enter coupon No. to use: ", (value) -> {
+            if (value < 0 || value >= coupons.size()) {
+              return ValidationResult.inValidInstance("Given coupon No. is out of index.");
+            }
+            return ValidationResult.validInstance();
+          });
+          if (!currentCart.applyCoupon(coupons.get(couponNo)))
+            Logger.printWarning("Fail to apply coupon! Please add product to cart before apply coupon.");
+          else
+            Logger.printSuccess("Apply coupon successfully!");
         }));
         add(new ActionOption<>("go back", () -> goBack.set(true)));
       }};

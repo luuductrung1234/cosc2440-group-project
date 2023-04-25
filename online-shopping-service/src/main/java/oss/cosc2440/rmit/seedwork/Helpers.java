@@ -7,6 +7,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -34,14 +38,22 @@ public class Helpers {
     return str == null || str.trim().isEmpty();
   }
 
+  public static String toString(Instant instant) {
+    if(instant == null)
+      return "n/a";
+    ZonedDateTime zonedDateTime = instant.atZone(ZoneId.systemDefault());
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss");
+    return formatter.format(zonedDateTime);
+  }
+
   /**
-   * Convert bigDecimal to String with VND format
+   * Convert bigDecimal to String with USD format
    */
   public static String toString(BigDecimal value) {
     if(value == null)
       return "n/a";
-    DecimalFormat decimalFormat = new DecimalFormat("#,###");
-    return String.format("%s (%s)", decimalFormat.format(value), "VND");
+    DecimalFormat decimalFormat = new DecimalFormat("#,###.##");
+    return String.format("%s (%s)", decimalFormat.format(value), "USD");
   }
 
   /**

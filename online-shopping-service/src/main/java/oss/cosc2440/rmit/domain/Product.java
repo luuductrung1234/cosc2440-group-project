@@ -2,8 +2,6 @@ package oss.cosc2440.rmit.domain;
 
 import oss.cosc2440.rmit.seedwork.Helpers;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 /**
@@ -42,12 +40,12 @@ public class Product extends Domain<UUID> {
     this.canUseAsGift = canUseAsGift;
   }
 
-  public void decreaseQuantity() {
-    this.quantity--;
+  public void decreaseQuantity(int quantity) {
+    this.quantity -= quantity;
   }
 
-  public void increaseQuantity() {
-    this.quantity++;
+  public void increaseQuantity(int quantity) {
+    this.quantity += quantity;
   }
 
   public void update(String name, String description, int quantity, double price, double weight, TaxType taxType, boolean canUseAsGift) {
@@ -61,23 +59,12 @@ public class Product extends Domain<UUID> {
   }
 
   @Override
-  public String serialize() {
-    List<String> fields = new ArrayList<>() {{
-      add(id.toString());
-      add(name);
-      add(description);
-      add(String.valueOf(quantity));
-      add(String.valueOf(price));
-      add(String.valueOf(weight));
-      add(type.toString());
-      add(taxType.toString());
-      add(String.valueOf(canUseAsGift));
-    }};
-    return String.join(",", fields);
+  public String toString() {
+    return String.format("%-8s - %s", this.getType(), this.getName());
   }
 
   /**
-   * override static method Domain.deserialize
+   * override static method Domain deserialize
    *
    * @param data serialized string data
    * @return new instance of Product
@@ -85,21 +72,20 @@ public class Product extends Domain<UUID> {
   public static Product deserialize(String data) {
     if (Helpers.isNullOrEmpty(data))
       throw new IllegalArgumentException("data to deserialize should not be empty!");
-    String[] fields = data.split(",", 9);
-    return new Product(UUID.fromString(fields[0]),
-        fields[1],
-        fields[2],
-        Integer.parseInt(fields[3]),
-        Double.parseDouble(fields[4]),
-        Double.parseDouble(fields[5]),
-        ProductType.valueOf(fields[6]),
-        TaxType.valueOf(fields[7]),
-        Boolean.parseBoolean(fields[8]));
-  }
+    String[] fields = data.split(",", 10);
 
-  @Override
-  public String toString() {
-    return String.format("%-8s - %s", this.getType(), this.getName());
+    if (!fields[0].equalsIgnoreCase(Product.class.getSimpleName()))
+      return null;
+
+    return new Product(UUID.fromString(fields[1]),
+        fields[2],
+        fields[3],
+        Integer.parseInt(fields[4]),
+        Double.parseDouble(fields[5]),
+        Double.parseDouble(fields[6]),
+        ProductType.valueOf(fields[7]),
+        TaxType.valueOf(fields[8]),
+        Boolean.parseBoolean(fields[9]));
   }
 
   // Getter methods

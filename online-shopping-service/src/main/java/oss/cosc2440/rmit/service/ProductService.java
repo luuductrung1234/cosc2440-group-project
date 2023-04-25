@@ -5,14 +5,12 @@ import oss.cosc2440.rmit.domain.Product;
 import oss.cosc2440.rmit.model.CreateProductModel;
 import oss.cosc2440.rmit.model.SearchProductParameters;
 import oss.cosc2440.rmit.model.UpdateProductModel;
-import oss.cosc2440.rmit.repository.CouponRepository;
-import oss.cosc2440.rmit.repository.ProductRepository;
+import oss.cosc2440.rmit.seedwork.Deserializer;
 import oss.cosc2440.rmit.seedwork.Helpers;
+import oss.cosc2440.rmit.seedwork.Logger;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.io.IOException;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -22,27 +20,33 @@ import java.util.stream.Stream;
  */
 public class ProductService {
 
-  private final ProductRepository productRepository;
-  private final CouponRepository couponRepository;
+  private final List<Product> products;
+  private final List<Coupon> coupons;
 
-  public ProductService(ProductRepository productRepository, CouponRepository couponRepository) {
-    this.productRepository = productRepository;
-    this.couponRepository = couponRepository;
+  public ProductService(String pathToFile) {
+    products = new ArrayList<>();
+    coupons = new ArrayList<>();
+    try {
+      products.addAll(Deserializer.read(pathToFile, Product.class));
+      coupons.addAll(Deserializer.read(pathToFile, Coupon.class));
+    } catch (IOException e) {
+      Logger.printWarning("Fail to load data from file");
+    }
   }
 
   public List<Product> listAll(SearchProductParameters parameters) {
-    Stream<Product> stream = productRepository.listAll().stream();
-    if(!Helpers.isNullOrEmpty(parameters.getName()))
+    Stream<Product> stream = products.stream();
+    if (!Helpers.isNullOrEmpty(parameters.getName()))
       stream = stream.filter(p -> p.getName().toUpperCase().contains(parameters.getName().toUpperCase()));
-    if(parameters.getType() != null)
+    if (parameters.getType() != null)
       stream = stream.filter(p -> p.getType().equals(parameters.getType()));
-    if(parameters.getTaxType() != null)
+    if (parameters.getTaxType() != null)
       stream = stream.filter(p -> p.getTaxType().equals(parameters.getTaxType()));
-    if(parameters.getFromPrice() != null)
+    if (parameters.getFromPrice() != null)
       stream = stream.filter(p -> p.getPrice() >= parameters.getFromPrice());
-    if(parameters.getToPrice() != null)
+    if (parameters.getToPrice() != null)
       stream = stream.filter(p -> p.getPrice() <= parameters.getToPrice());
-    if(parameters.getSortedBy() != null) {
+    if (parameters.getSortedBy() != null) {
       switch (parameters.getSortedBy()) {
         case PriceAscending:
           stream = stream.sorted(Comparator.comparingDouble(Product::getPrice));
@@ -64,15 +68,23 @@ public class ProductService {
   }
 
   public Optional<Product> findById(UUID productId) {
-    return productRepository.findById(productId);
+    return products.stream().filter(p -> p.getId().equals(productId)).findFirst();
   }
 
-  public Optional<Coupon> findCoupon(UUID productId) {
-    return couponRepository.findByProductId(productId);
+  public List<Coupon> findCoupon(UUID productId) {
+    return coupons.stream().filter(c -> c.getTargetProduct().equals(productId)).collect(Collectors.toList());
+  }
+
+  public boolean couponExist(String code) {
+    return coupons.stream().anyMatch(c -> c.getCode().equalsIgnoreCase(code));
+  }
+
+  public Optional<Coupon> findCoupon(String code) {
+    return coupons.stream().filter(c -> c.getCode().equalsIgnoreCase(code)).findFirst();
   }
 
   public boolean isExisted(String name) {
-    return productRepository.findByName(name).isPresent();
+    return products.stream().anyMatch(p -> p.getName().equals(name));
   }
 
   public boolean addProduct(CreateProductModel model) {
@@ -85,11 +97,11 @@ public class ProductService {
         model.getType(),
         model.getTaxType(),
         model.canUseAsGift());
-    return productRepository.add(product);
+    return products.add(product);
   }
 
   public boolean updateProduct(UpdateProductModel model) {
-    Optional<Product> productOpt = productRepository.findById(model.getId());
+    Optional<Product> productOpt = findById(model.getId());
     if (productOpt.isEmpty())
       return false;
 
@@ -102,9 +114,8 @@ public class ProductService {
         model.getWeight(),
         model.getTaxType(),
         model.canUseAsGift());
-    productRepository.update(product);
 
-    // sync new product info into non-purchased carts
+    // TODO: sync new product info into non-purchased carts
     return true;
   }
 }
