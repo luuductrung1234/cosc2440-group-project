@@ -64,13 +64,18 @@ public class MenuService {
     do {
       banner("products");
       List<Product> products = productService.listAll(searchParameters.get());
-      System.out.printf("search by \n\t " +
-              "name: %-20s \n\t " +
-              "type: %-20s \n\t " +
-              "tax: %-20s\n\n",
+      System.out.printf("search by\n\t " +
+              "name: %-20s\n\t " +
+              "type: %-20s\n\t " +
+              "tax: %-20s\n\t" +
+              "from: %-20s to: %-20s\n\t" +
+              "sort by: %-20s\n\n",
           Helpers.isNullOrEmpty(searchParameters.get().getName()) ? "n/a" : searchParameters.get().getName(),
           searchParameters.get().getType() == null ? "n/a" : searchParameters.get().getType(),
-          searchParameters.get().getTaxType() == null ? "n/a" : searchParameters.get().getTaxType());
+          searchParameters.get().getTaxType() == null ? "n/a" : searchParameters.get().getTaxType(),
+          searchParameters.get().getFromPrice() == null ? "n/a" : searchParameters.get().getFromPrice(),
+          searchParameters.get().getToPrice() == null ? "n/a" : searchParameters.get().getToPrice(),
+          searchParameters.get().getSortedBy() == null ? "n/a" : searchParameters.get().getSortedBy());
 
       System.out.printf("%-7s %-35s %-10s %-20s %-45s %10s\n", "No.", "name", "quantity", "price", "description", "weight");
       System.out.println("-".repeat(140));
@@ -156,7 +161,7 @@ public class MenuService {
       if (coupons.isEmpty())
         Logger.printInfo("This product has no coupon...");
       for (Coupon coupon : coupons) {
-        System.out.printf("\t[ %-12s: %-10s, %-12s: -%s ]\n", "Code", coupon.getCode(),
+        System.out.printf("\t[ %-6s: %-10s, %-6s: -%-15s ]\n", "Code", coupon.getCode(),
             "Value", coupon.getType().equals(CouponType.PRICE)
                 ? Helpers.toString(coupon.getValue(), "USD", true)
                 : coupon.getValue() + "%");
