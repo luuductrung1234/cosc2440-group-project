@@ -1,7 +1,9 @@
 package oss.cosc2440.rmit.domain;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author Luu Duc Trung - S3951127
@@ -11,9 +13,7 @@ public class ShoppingCart extends Domain<UUID> {
   /**
    * shopping cart attributes
    */
-  private Set<CartItem> items = new HashSet<CartItem>();
-  private String couponCode = "";
-  private String taxType;
+  private final Set<CartItem> items;
   private Instant dateOfPurchase;
 
   /**
@@ -21,24 +21,12 @@ public class ShoppingCart extends Domain<UUID> {
    */
   public ShoppingCart() {
     this(UUID.randomUUID(), new HashSet<>(), null);
-
   }
 
   public ShoppingCart(UUID id, Set<CartItem> items, Instant dateOfPurchase) {
-    // do we need date constructor parameter?
-    // I think it is better to make new calender here
     super(id);
     this.items = items;
-
     this.dateOfPurchase = dateOfPurchase;
-  }
-
-  public String getCouponCode() {
-    return couponCode;
-  }
-
-  public void setCouponCode(String couponCode) {
-    this.couponCode = couponCode;
   }
 
   public int totalQuantity() {
@@ -46,82 +34,145 @@ public class ShoppingCart extends Domain<UUID> {
   }
 
   public double totalWeight() {
-    return this.items.stream().mapToDouble(CartItem::getProductWeight).sum();
-
+    return this.items.stream().mapToDouble(CartItem::getItemWeight).sum();
   }
 
-  public double totalAmount() {
-    double totalAmount = 0;
-    for (CartItem cartItem : items) {
-      totalAmount += getPrice(cartItem);
-    }
-    return totalAmount;
-
+  public BigDecimal totalAmount() {
+    return this.items.stream().map(CartItem::getItemPrice).reduce(BigDecimal.ZERO, BigDecimal::add);
   }
 
-  public boolean addItem(Product product) {
-    boolean result = true;
-    for (CartItem cartItem : items) {
-      if (product.getName().equals(cartItem.getProductName())) {
-        result = false;
-        break;
-      }
+  /**
+   * Add item to the shopping cart:
+   * - Increase item quantity if it already existed in cart.
+   * - Or add new item to the cart.
+   * If there are more than 1 items with the same product, the non-gift item has higher precedence in the selection
+   */
+  public boolean addItem(Product product, int quantity) {
+    if (product.getQuantity() < quantity)
+      return false;
+
+    List<CartItem> existingItems = this.items.stream()
+        .filter(i -> i.getProductId().equals(product.getId())).collect(Collectors.toList());
+    if (existingItems.isEmpty()) {
+      this.items.add(new CartItem(this.id,
+          product.getId(),
+          product.getName(),
+          product.getPrice(),
+          product.getWeight(),
+          product.getTaxType(),
+          quantity));
+      product.decreaseQuantity(quantity);
+      return true;
     }
-    if (result == true) {
-      double weight = (product instanceof PhysicalProduct) ? ((PhysicalProduct) product).getWeight() : 0;
 
-      CartItem cartItem = new CartItem(UUID.randomUUID(), product.getId(), product.getName(), product.getPrice(),
-          weight,
-          product.getTaxType(), product.getQuantity());
-      this.items.add(cartItem);
+    // prefer non-gift item to select
+    Optional<CartItem> nonGiftItemOpt = existingItems.stream().filter(i -> !i.isGift()).findFirst();
+    if(nonGiftItemOpt.isPresent()) {
+      CartItem nonGiftItem = nonGiftItemOpt.get();
+      nonGiftItem.increaseQuantity(quantity);
+      product.decreaseQuantity(quantity);
+      return true;
     }
 
-    return result;
-
+    // if there are only gift items, select the first one
+    CartItem item = existingItems.stream().findFirst().orElseThrow();
+    item.increaseQuantity(quantity);
+    product.decreaseQuantity(quantity);
+    return true;
   }
 
-  public boolean removeItem(String productName) {
-    for (CartItem item : this.items) {
-      if (item.getProductName().equals(productName)) {
-        this.items.remove(productName);
-        return true;
-      }
+  /**
+   * Increase quantity of an item in shopping cart
+   */
+  public boolean addItem(UUID cartId, Product product, int quantity) {
+    if (product.getQuantity() < quantity)
+      return false;
 
-    }
-    return false;
+    Optional<CartItem> itemOpt = this.items.stream()
+        .filter(i -> i.getId().equals(cartId)).findFirst();
+    if (itemOpt.isEmpty())
+      return false;
+    CartItem item = itemOpt.get();
+    item.increaseQuantity(quantity);
+    product.decreaseQuantity(quantity);
+    return true;
   }
 
-  public double getPrice(CartItem cartItem) {
-    double couponAppliedPrice = 0;
-    double tax = 0;
-    if (cartItem.getCouponCode().equals(this.couponCode)) {
-      couponAppliedPrice += cartItem.getProductPrice() * 0.1;
-      // coupon service
-    } else {
-      couponAppliedPrice += cartItem.getProductPrice();
+  /**
+   * Deduct quantity of an item in shopping cart:
+   * - Decrease item quantity if given quantity < item's quantity.
+   * - Or remove entire item from the cart if given quantity >= item's quantity.
+   */
+  public boolean removeItem(UUID cartId, Product product, int quantity) {
+    Optional<CartItem> itemOpt = this.items.stream()
+        .filter(i -> i.getId().equals(cartId)).findFirst();
+    if (itemOpt.isEmpty())
+      return false;
+
+    CartItem item = itemOpt.get();
+    if (item.getQuantity() >= quantity) {
+      boolean isSuccess = this.items.removeIf(i -> i.getId().equals(cartId));
+      if (isSuccess)
+        product.increaseQuantity(item.getQuantity());
+      return isSuccess;
     }
-    if (cartItem.getTaxType().equals("TAX_FREE")) {
-      tax = 0;
-    } else if (cartItem.getTaxType().equals("NORMAL_TAX")) {
-      tax = cartItem.getProductPrice() * 0.1;
-    } else {
-      tax = cartItem.getProductPrice() * 0.2;
-    }
-    return couponAppliedPrice + tax;
+
+    item.decreaseQuantity(quantity);
+    product.increaseQuantity(quantity);
+    return true;
   }
 
+  public List<CartItem> getItemsAppliedCoupon() {
+    return this.items.stream().filter(CartItem::appliedCoupon).collect(Collectors.toList());
+  }
+
+  public void clearAppliedCoupon() {
+    List<CartItem> appliedItems = getItemsAppliedCoupon();
+    if (appliedItems.isEmpty()) {
+      return;
+    }
+    for (CartItem item : appliedItems) {
+      item.clearCoupon();
+    }
+  }
+
+  /**
+   * Only apply coupon, which targets to the product already in shopping cart.
+   * Also clear any applied coupon in the cart before applying new one.
+   */
+  public boolean applyCoupon(Coupon coupon) {
+    List<CartItem> itemsToApply = this.items.stream()
+        .filter(i -> i.getProductId().equals(coupon.getTargetProduct())).collect(Collectors.toList());
+    if (itemsToApply.isEmpty())
+      return false;
+
+    clearAppliedCoupon();
+    for (CartItem item : itemsToApply) {
+      item.applyCoupon(coupon);
+    }
+    return true;
+  }
+
+  /**
+   * Only Sync product information (after update) for shopping cart has not been purchased
+   *
+   * @param product updated product
+   */
   public void syncProductInfo(Product product) {
     if (isPurchased())
       throw new IllegalStateException("Can not update product info for purchased shopping cart");
-    Optional<CartItem> itemOpt = items.stream().filter(i -> i.getProductId().equals(product.getId())).findFirst();
-    if (itemOpt.isEmpty())
+    List<CartItem> itemsToUpdate = items.stream().filter(i -> i.getProductId().equals(product.getId())).collect(Collectors.toList());
+    if (itemsToUpdate.isEmpty())
       return;
-    CartItem item = itemOpt.get();
-    if (product.getType() == ProductType.PHYSICAL) {
+    for (CartItem item : itemsToUpdate) {
       item.syncProductInfo(product.getName(), product.getPrice(), product.getWeight(), product.getTaxType());
-    } else {
-      item.syncProductInfo(product.getName(), product.getPrice(), 0, product.getTaxType());
     }
+  }
+
+  public void purchase() {
+    if(isPurchased())
+      throw new IllegalStateException("Shopping cart already purchased");
+    dateOfPurchase = Instant.now();
   }
 
   public boolean isPurchased() {

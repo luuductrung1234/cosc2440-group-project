@@ -138,7 +138,7 @@ public class MenuService {
       Optional<Product> productOpt = productService.findById(productId);
       if (productOpt.isEmpty())
         throw new IllegalStateException("Product with id: " + productId + " not found!");
-      Optional<Coupon> couponOpt = productService.findCoupon(productId);
+      List<Coupon> coupons = productService.findCoupon(productId);
 
       Product product = productOpt.get();
       System.out.printf("%-16s: %-10s \n", "Id", product.getId());
@@ -152,13 +152,14 @@ public class MenuService {
         System.out.printf("%-16s: %-10s \n", "Weight", "n/a");
       System.out.printf("%-16s: %-10s \n", "Can use as gift", product.canUseAsGift() ? "yes" : "no");
 
-      if (couponOpt.isPresent()) {
-        Coupon coupon = couponOpt.get();
-        System.out.println("\nCoupon");
-        System.out.printf("\t%-12s: %-10s \n", "Code", coupon.getCode());
-        System.out.printf("\t%-12s: -%s \n", "Value", coupon.getType().equals(CouponType.PRICE)
-            ? Helpers.toString(coupon.getValue(), "USD", true)
-            : coupon.getValue() + "%");
+      System.out.println("\nCoupon");
+      if (coupons.isEmpty())
+        Logger.printInfo("This product has no coupon...");
+      for (Coupon coupon : coupons) {
+        System.out.printf("\t[ %-12s: %-10s, %-12s: -%s ]\n", "Code", coupon.getCode(),
+            "Value", coupon.getType().equals(CouponType.PRICE)
+                ? Helpers.toString(coupon.getValue(), "USD", true)
+                : coupon.getValue() + "%");
       }
 
       List<ActionOption<Runnable>> actionOptions = new ArrayList<>() {{

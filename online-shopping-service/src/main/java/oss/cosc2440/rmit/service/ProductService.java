@@ -67,7 +67,7 @@ public class ProductService {
     return productRepository.findById(productId);
   }
 
-  public Optional<Coupon> findCoupon(UUID productId) {
+  public List<Coupon> findCoupon(UUID productId) {
     return couponRepository.findByProductId(productId);
   }
 

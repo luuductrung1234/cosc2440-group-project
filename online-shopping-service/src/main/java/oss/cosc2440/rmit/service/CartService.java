@@ -14,11 +14,9 @@ import java.util.stream.Collectors;
  */
 public class CartService {
   private final CartRepository cartRepository;
-  private final ProductService productService;
 
-  public CartService(CartRepository cartRepository, ProductService productService) {
+  public CartService(CartRepository cartRepository) {
     this.cartRepository = cartRepository;
-    this.productService = productService;
   }
 
   public List<ShoppingCart> listAll() {
@@ -28,12 +26,15 @@ public class CartService {
   }
 
   public void syncProductInfo(Product product) {
-    // find all non-purchased carts
-    // sync product info
+    List<ShoppingCart> carts = listAll().stream().filter(c -> !c.isPurchased()).collect(Collectors.toList());
+    carts.forEach(c -> {
+      c.syncProductInfo(product);
+      cartRepository.update(c);
+    });
   }
 
   public void submit(ShoppingCart cart) {
-    // save cart
+    cartRepository.add(cart);
   }
 
   public void printReceipt(ShoppingCart cart, boolean printToFile) {
@@ -42,14 +43,16 @@ public class CartService {
     } else {
       print(cart);
     }
-    // set date of purchase
+
+    cart.purchase();
+    cartRepository.update(cart);
   }
 
   public void print(ShoppingCart cart) {
-    // print to console
+    // TODO: print to console
   }
 
   public void printToFile(ShoppingCart cart) {
-    // print to file
+    // TODO: print to file
   }
 }

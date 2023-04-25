@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class FileCouponRepositoryImpl extends BaseFileRepository implements CouponRepository {
   public FileCouponRepositoryImpl(String pathToDataFile) {
@@ -35,7 +36,7 @@ public class FileCouponRepositoryImpl extends BaseFileRepository implements Coup
   }
 
   @Override
-  public Optional<Coupon> findByProductId(UUID productId) {
-    return listAll().stream().filter(c -> c.getTargetProduct().equals(productId)).findFirst();
+  public List<Coupon> findByProductId(UUID productId) {
+    return listAll().stream().filter(c -> c.getTargetProduct().equals(productId)).collect(Collectors.toList());
   }
 }

@@ -13,5 +13,5 @@ public interface CouponRepository {
 
   Optional<Coupon> findByCode(String code);
 
-  Optional<Coupon> findByProductId(UUID productId);
+  List<Coupon> findByProductId(UUID productId);
 }
