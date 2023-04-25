@@ -1,5 +1,7 @@
 package oss.cosc2440.rmit.domain;
 
+import oss.cosc2440.rmit.seedwork.Helpers;
+
 import java.util.UUID;
 
 public class Coupon extends Domain<UUID> {
@@ -26,6 +28,27 @@ public class Coupon extends Domain<UUID> {
   @Override
   public String toString() {
     return String.format("%s - %s", this.getType(), this.getCode());
+  }
+
+  /**
+   * override static method Domain deserialize
+   *
+   * @param data serialized string data
+   * @return new instance of Product
+   */
+  public static Coupon deserialize(String data) {
+    if (Helpers.isNullOrEmpty(data))
+      throw new IllegalArgumentException("data to deserialize should not be empty!");
+    String[] fields = data.split(",", 6);
+
+    if (!fields[0].equalsIgnoreCase(Coupon.class.getSimpleName()))
+      return null;
+
+    return new Coupon(UUID.fromString(fields[1]),
+        fields[2],
+        CouponType.valueOf(fields[3]),
+        Double.parseDouble(fields[4]),
+        UUID.fromString(fields[5]));
   }
 
   // Getter methods

@@ -1,5 +1,7 @@
 package oss.cosc2440.rmit.domain;
 
+import oss.cosc2440.rmit.seedwork.Helpers;
+
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.*;
@@ -13,19 +15,19 @@ public class ShoppingCart extends Domain<UUID> {
   /**
    * shopping cart attributes
    */
-  private final Set<CartItem> items;
+  private List<CartItem> items;
   private Instant dateOfPurchase;
 
   /**
    * Constructor
    */
   public ShoppingCart() {
-    this(UUID.randomUUID(), new HashSet<>(), null);
+    this(UUID.randomUUID(), null);
   }
 
-  public ShoppingCart(UUID id, Set<CartItem> items, Instant dateOfPurchase) {
+  public ShoppingCart(UUID id, Instant dateOfPurchase) {
     super(id);
-    this.items = items;
+    this.items = new ArrayList<>();
     this.dateOfPurchase = dateOfPurchase;
   }
 
@@ -67,7 +69,7 @@ public class ShoppingCart extends Domain<UUID> {
 
     // prefer non-gift item to select
     Optional<CartItem> nonGiftItemOpt = existingItems.stream().filter(i -> !i.isGift()).findFirst();
-    if(nonGiftItemOpt.isPresent()) {
+    if (nonGiftItemOpt.isPresent()) {
       CartItem nonGiftItem = nonGiftItemOpt.get();
       nonGiftItem.increaseQuantity(quantity);
       product.decreaseQuantity(quantity);
@@ -170,7 +172,7 @@ public class ShoppingCart extends Domain<UUID> {
   }
 
   public void purchase() {
-    if(isPurchased())
+    if (isPurchased())
       throw new IllegalStateException("Shopping cart already purchased");
     dateOfPurchase = Instant.now();
   }
@@ -179,9 +181,31 @@ public class ShoppingCart extends Domain<UUID> {
     return dateOfPurchase != null;
   }
 
-  // Getter methods
+  /**
+   * override static method Domain deserialize
+   *
+   * @param data serialized string data
+   * @return new instance of Product
+   */
+  public static ShoppingCart deserialize(String data) {
+    if (Helpers.isNullOrEmpty(data))
+      throw new IllegalArgumentException("data to deserialize should not be empty!");
+    String[] fields = data.split(",", 3);
+
+    if (!fields[0].equalsIgnoreCase(ShoppingCart.class.getSimpleName()))
+      return null;
+
+    return new ShoppingCart(UUID.fromString(fields[1]),
+        Helpers.isNullOrEmpty(fields[2]) ? null : Instant.parse(fields[2]));
+  }
+
+  // Getter & Setter methods
   public Collection<CartItem> getItems() {
     return this.items;
+  }
+
+  public void setItems(List<CartItem> items) {
+    this.items = items;
   }
 
   public Instant getDateOfPurchase() {

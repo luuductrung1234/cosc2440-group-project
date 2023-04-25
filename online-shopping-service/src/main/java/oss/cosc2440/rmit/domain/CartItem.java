@@ -158,6 +158,34 @@ public class CartItem extends Domain<UUID> implements Gift, Splittable<CartItem>
     this.taxType = taxType;
   }
 
+  /**
+   * override static method Domain deserialize
+   *
+   * @param data serialized string data
+   * @return new instance of Product
+   */
+  public static CartItem deserialize(String data) {
+    if (Helpers.isNullOrEmpty(data))
+      throw new IllegalArgumentException("data to deserialize should not be empty!");
+    String[] fields = data.split(",", 13);
+
+    if (!fields[0].equalsIgnoreCase(CartItem.class.getSimpleName()))
+      return null;
+
+    return new CartItem(UUID.fromString(fields[1]),
+        UUID.fromString(fields[2]),
+        UUID.fromString(fields[3]),
+        fields[4],
+        Double.parseDouble(fields[5]),
+        Double.parseDouble(fields[6]),
+        TaxType.valueOf(fields[7]),
+        Integer.parseInt(fields[8]),
+        Helpers.isNullOrEmpty(fields[9]) ? null : fields[9],
+        Helpers.isNullOrEmpty(fields[10]) ? 0 : Double.parseDouble(fields[10]),
+        Helpers.isNullOrEmpty(fields[11]) ? null : CouponType.valueOf(fields[11]),
+        fields[12]);
+  }
+
   // Override methods
   @Override
   public boolean isGift() {
