@@ -13,8 +13,8 @@ import java.util.List;
  * @author Luu Duc Trung - S3951127
  */
 public class Constants {
-  public static final String PRODUCT_FILE_NAME = Path.of("data", "products.txt").toString();
-  public static final String CART_FILE_NAME = Path.of("data", "carts.txt").toString();
+  public static final String PRODUCT_FILE_NAME = "products.txt";
+  public static final String CART_FILE_NAME = "carts.txt";
 
   public static final double BASE_FEE = 0.1;
 
