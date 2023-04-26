@@ -5,17 +5,18 @@ Online Shopping Service
 
 must have features
 
-- [] The quantity of each product in a shopping cart can be greater than one.
-- [] When create new product, user can decide whether the new product can be used as gift or not. If the product can be used as gift, user add this product into `ShoppingCart` as an `CartItem` and set/get greeting message to it.
-- [] Data input
-- [] Update `ShoppingCart`
-  - [] `boolean addItem(String productName, int quantity)`
-  - [] `boolean removeItem(String productName, int quantity)`
-- [] Coupon
-- [] Tax
+- [x] The quantity of each product in a shopping cart can be greater than one.
+- [x] When create new product, user can decide whether the new product can be used as gift or not. If the product can be used as gift, user add this product into `ShoppingCart` as an `CartItem` and set/get greeting message to it.
+- [x] Data input
+- [x] Update `ShoppingCart`
+  - [x] `boolean addItem(Product product, int quantity)`
+  - [x] `boolean addItem(UUID itemId, Product product, int quantity)`
+  - [x] `boolean removeItem(UUID itemId, Product product, int quantity)`
+- [x] Coupon
+- [x] Tax
 - [] Print purchase receipts to console or stored in a text file
-- [] Sort a list of all ShoppingCart by total weight (in increasing order)
-- [] Update UI
+- [x] Sort a list of all ShoppingCart by total weight (in increasing order)
+- [x] Update UI
 - [] Unit Test
 
 documentation
