@@ -1,10 +1,10 @@
 package oss.cosc2440.rmit;
 
 import oss.cosc2440.rmit.seedwork.Constants;
-import oss.cosc2440.rmit.seedwork.Logger;
-import oss.cosc2440.rmit.service.*;
-
-import java.util.Objects;
+import oss.cosc2440.rmit.seedwork.Helpers;
+import oss.cosc2440.rmit.service.CartService;
+import oss.cosc2440.rmit.service.MenuService;
+import oss.cosc2440.rmit.service.ProductService;
 
 /**
  * @author Luu Duc Trung - S3951127
@@ -13,21 +13,9 @@ public class Main {
   public static void main(String[] args) {
     ClassLoader loader = Main.class.getClassLoader();
 
-    if (loader.getResource(Constants.PRODUCT_FILE_NAME) == null) {
-      Logger.printWarning("Not found data file %s", Constants.PRODUCT_FILE_NAME);
-      return;
-    }
+    ProductService productService = new ProductService(Helpers.getPathToFile(loader, Constants.PRODUCT_FILE_NAME));
 
-    if (loader.getResource(Constants.CART_FILE_NAME) == null) {
-      Logger.printWarning("Not found data file %s", Constants.CART_FILE_NAME);
-      return;
-    }
-
-    ProductService productService = new ProductService(
-        Objects.requireNonNull(loader.getResource(Constants.PRODUCT_FILE_NAME)).getPath());
-
-    CartService cartService = new CartService(
-        Objects.requireNonNull(loader.getResource(Constants.CART_FILE_NAME)).getPath());
+    CartService cartService = new CartService(Helpers.getPathToFile(loader, Constants.CART_FILE_NAME));
 
     MenuService menuService = new MenuService(productService, cartService);
     menuService.welcomeScreen();

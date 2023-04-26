@@ -6,6 +6,9 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.file.Paths;
 import java.text.DecimalFormat;
 import java.time.Instant;
 import java.time.ZoneId;
@@ -19,11 +22,24 @@ import java.util.regex.Pattern;
 
 /**
  * @author Luu Duc Trung - S3951127
- *
+ * <p>
  * Acknowledgement:
- *  - Colin Hebert, "Check whether a String is not Null and not Empty", Stackoverflow, https://stackoverflow.com/a/3598792
+ * - Colin Hebert, "Check whether a String is not Null and not Empty", Stackoverflow, https://stackoverflow.com/a/3598792
  */
 public class Helpers {
+  public static String getPathToFile(ClassLoader loader, String fileName) {
+    if (loader.getResource(fileName) == null) {
+      Logger.printWarning("Not found data file %s", fileName);
+      throw new IllegalStateException(String.format("Not found data file %s", fileName));
+    }
+    try {
+      URI uri = Objects.requireNonNull(loader.getResource(fileName)).toURI();
+      return Paths.get(uri).toString();
+    } catch (URISyntaxException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
   /**
    * Generate empty UUID
    */
@@ -39,7 +55,7 @@ public class Helpers {
   }
 
   public static String toString(Instant instant) {
-    if(instant == null)
+    if (instant == null)
       return "n/a";
     ZonedDateTime zonedDateTime = instant.atZone(ZoneId.systemDefault());
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss");
@@ -50,7 +66,7 @@ public class Helpers {
    * Convert bigDecimal to String with USD format
    */
   public static String toString(BigDecimal value) {
-    if(value == null)
+    if (value == null)
       return "n/a";
     DecimalFormat decimalFormat = new DecimalFormat("#,###.##");
     return String.format("%s (%s)", decimalFormat.format(value), "USD");
