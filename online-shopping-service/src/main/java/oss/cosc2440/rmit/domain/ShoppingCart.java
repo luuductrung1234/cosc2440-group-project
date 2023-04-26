@@ -65,7 +65,7 @@ public class ShoppingCart extends Domain<UUID> {
    * Add item to the shopping cart:
    * - Increase item quantity if it already existed in cart.
    * - Or add new item to the cart.
-   * If there are more than 1 items with the same product, the non-gift item has higher precedence in the selection
+   * If there are more than 1 items with the same product, add to non-gift item
    */
   public boolean addItem(Product product, int quantity) {
     if (product.getQuantity() < quantity)
@@ -94,9 +94,14 @@ public class ShoppingCart extends Domain<UUID> {
       return true;
     }
 
-    // if there are only gift items, select the first one
-    CartItem item = existingItems.stream().findFirst().orElseThrow();
-    item.increaseQuantity(quantity);
+    // if there are only gift items, create new non-gift item
+    this.items.add(new CartItem(this.id,
+        product.getId(),
+        product.getName(),
+        product.getPrice(),
+        product.getWeight(),
+        product.getTaxType(),
+        quantity));
     product.decreaseQuantity(quantity);
     return true;
   }
