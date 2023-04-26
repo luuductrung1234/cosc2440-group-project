@@ -6,6 +6,7 @@ import oss.cosc2440.rmit.domain.ShoppingCart;
 import oss.cosc2440.rmit.seedwork.Deserializer;
 import oss.cosc2440.rmit.seedwork.Logger;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -78,12 +79,39 @@ public class CartService {
     }
 
     private void printToFile(ShoppingCart cart) {
-        // Print to file
         Scanner scanner = new Scanner(System.in);
         System.out.println("Please enter file name to print to:");
         String fileName = scanner.nextLine();
 
-        try (FileWriter writer = new FileWriter(fileName)) {
+        String directory;
+        File directoryFile;
+
+        /*
+        prompts user for a location to store there file
+        EXAMPLE -
+        C:\Users\(USERNAME)\Downloads\receipt
+        */
+        while (true) {
+            System.out.println("Please enter directory to store the file:");
+            directory = scanner.nextLine();
+
+            directoryFile = new File(directory);
+            if (directoryFile.exists() && directoryFile.isDirectory()) {
+                break;
+            } else {
+                System.err.println("Error: The directory you entered is not valid.");
+                System.out.println("Do you want to enter the directory again or print to console instead? (E/C)");
+                String choice = scanner.nextLine();
+                if (choice.equalsIgnoreCase("C")) {
+                    print(cart);
+                    return;
+                }
+            }
+        }
+
+        String filePath = directory + File.separator + fileName;
+
+        try (FileWriter writer = new FileWriter(filePath)) {
             writer.write("======== RECEIPT ========\n\n");
 
             writer.write(String.format("Date of purchase: %s\n\n", cart.getDateOfPurchase()));
@@ -105,8 +133,10 @@ public class CartService {
 
             writer.write("Thank you for shopping with us!\n");
             writer.write("=========================");
+            System.out.println(String.format("Receipt successfully created at %s", filePath));
         } catch (IOException e) {
             e.printStackTrace();
         }
+
     }
 }
