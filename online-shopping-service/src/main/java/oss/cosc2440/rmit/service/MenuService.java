@@ -432,16 +432,24 @@ public class MenuService {
         model.setTaxType(product.getTaxType());
       }
 
-      Logger.printInfo(String.format("Can be used as gift: %s", product.canUseAsGift()));
-      model.setCanUseAsGift(product.canUseAsGift());
-      Helpers.requestBoolInput(scanner, "Can the product be used as gift? [y/n]: ", "canUseAsGift", model);
+      Logger.printInfo(String.format("Old product type : %s", product.getType()));
+      Helpers.requestSelectValue(scanner, "Select product type: ", Constants.PRODUCT_TYPE_OPTIONS, "type", model);
+      if (model.getType() == null) {
+        model.setType(product.getType());
+      }
 
-      if (product.getType().equals(ProductType.PHYSICAL)) {
+      if (model.getType().equals(ProductType.PHYSICAL)) {
         Logger.printInfo(String.format("Old weight: %.2f", product.getWeight()));
         Helpers.requestDoubleInput(scanner, "Enter product weight: ", "weight", model);
         if (model.getWeight() == null)
           model.setWeight(product.getWeight());
+      } else {
+        model.setWeight(0.0);
       }
+
+      Logger.printInfo(String.format("Can be used as gift: %s", product.canUseAsGift()));
+      model.setCanUseAsGift(product.canUseAsGift());
+      Helpers.requestBoolInput(scanner, "Can the product be used as gift? [y/n]: ", "canUseAsGift", model);
 
       if (productService.updateProduct(model)) {
         Logger.printSuccess("Update product successfully!");
