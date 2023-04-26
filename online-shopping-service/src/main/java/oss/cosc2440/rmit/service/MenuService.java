@@ -57,22 +57,26 @@ public class MenuService {
       List<CartItem> itemsAppliedCoupon = currentCart.getItemsAppliedCoupon();
       if (!itemsAppliedCoupon.isEmpty()) {
         System.out.printf("%-15s: %s\n", "Coupon", itemsAppliedCoupon.stream().findFirst().get().getCouponCode());
-        System.out.printf("%-15s: -%s\n", "Coupon Value", Helpers.toString(itemsAppliedCoupon.stream().mapToDouble(CartItem::getCouponValue).sum(), "USD", true));
-      }
+        System.out.println();
+      } else System.out.println();
 
-      System.out.printf("%-15s: %s\n\n", "Shipping Fee", Helpers.toString(currentCart.shippingFee(), "USD", true));
-      System.out.printf("%-15s: %s\n\n", "Total Amount", Helpers.toString(currentCart.totalAmount()));
-
-      System.out.printf("%-7s %-35s %-20s %-20s %-20s %-20s\n", "No.", "name", "quantity", "price", "weight", "message");
-      System.out.println("-".repeat(120));
+      System.out.printf("%-7s %-35s %-15s %-20s %-15s %-12s %-20s\n", "No.", "name", "quantity", "price", "weight", "tax", "message");
+      System.out.println("-".repeat(130));
       if (currentCart.getItems().isEmpty())
         Logger.printInfo("Cart is empty...");
       for (int itemNo = 0; itemNo < currentCart.getItems().size(); itemNo++) {
         CartItem item = currentCart.getItems().get(itemNo);
-        System.out.printf("%-7s %-35s %-20s %-20s %-20s %-20s\n", itemNo, item.getProductName(),
+        System.out.printf("%-7s %-35s %-15s %-20s %-15s %-12s %-20s\n", itemNo, item.getProductName(),
             item.getQuantity(), Helpers.toString(item.getProductPrice(), "USD", true),
-            item.getProductWeight(), Helpers.isNullOrEmpty(item.getMessage()) ? "-" : item.getMessage());
+            item.getProductWeight(), item.getTaxType(), Helpers.isNullOrEmpty(item.getMessage()) ? "-" : item.getMessage());
       }
+
+      System.out.println();
+      System.out.printf("%-20s: %s\n", "Total Origin Amount", Helpers.toString(currentCart.totalOriginAmount()));
+      System.out.printf("%-20s: + %s\n", "Tax", Helpers.toString(currentCart.totalTax()));
+      System.out.printf("%-20s: - %s\n", "Discount", Helpers.toString(currentCart.totalDiscount()));
+      System.out.printf("%-20s: + %s\n", "Shipping Fee", Helpers.toString(currentCart.shippingFee(), "USD", true));
+      System.out.printf("%-20s: %s\n", "Total Amount", Helpers.toString(currentCart.totalAmount()));
 
       List<ActionOption<Runnable>> actionOptions = new ArrayList<>();
 
@@ -215,12 +219,12 @@ public class MenuService {
     do {
       banner("products");
       List<Product> products = productService.listAll(searchParameters.get());
-      System.out.printf("search by\n\t " +
-              "name: %-20s\n\t " +
-              "type: %-20s\n\t " +
-              "tax: %-20s\n\t" +
-              "from: %-20s to: %-20s\n\t" +
-              "sort by: %-20s\n\n",
+      System.out.printf("search by\n" +
+              "\tname: %-20s\n" +
+              "\ttype: %-20s\n" +
+              "\ttax: %-20s\n" +
+              "\tfrom: %-20s to: %-20s\n" +
+              "\tsort by: %-20s\n\n",
           Helpers.isNullOrEmpty(searchParameters.get().getName()) ? "n/a" : searchParameters.get().getName(),
           searchParameters.get().getType() == null ? "n/a" : searchParameters.get().getType(),
           searchParameters.get().getTaxType() == null ? "n/a" : searchParameters.get().getTaxType(),
@@ -277,8 +281,10 @@ public class MenuService {
             }
             return ValidationResult.validInstance();
           });
-          currentCart.addItem(products.get(productNo), 1);
-          Logger.printSuccess("Add item to cart successfully!");
+          if (!currentCart.addItem(products.get(productNo), 1))
+            Logger.printWarning("Fail to add item to cart!");
+          else
+            Logger.printSuccess("Add item to cart successfully!");
         }));
         add(new ActionOption<>("create product", () -> createProductScreen()));
         add(new ActionOption<>("edit product", () -> {
@@ -318,7 +324,7 @@ public class MenuService {
         System.out.printf("%-16s: %-10s \n", "Weight", "n/a");
       System.out.printf("%-16s: %-10s \n", "Can use as gift", product.canUseAsGift() ? "yes" : "no");
 
-      System.out.println("\nCoupon");
+      System.out.println("\nCoupons:");
       if (coupons.isEmpty())
         Logger.printInfo("This product has no coupon...");
       for (int couponNo = 0; couponNo < coupons.size(); couponNo++) {
@@ -332,9 +338,10 @@ public class MenuService {
       List<ActionOption<Runnable>> actionOptions = new ArrayList<>() {{
         add(new ActionOption<>("edit product", () -> editProductScreen(product)));
         add(new ActionOption<>("add to cart", () -> {
-          currentCart.addItem(product, 1);
-          Logger.printSuccess("Add item to cart successfully!");
-          goBack.set(true);
+          if (!currentCart.addItem(product, 1))
+            Logger.printWarning("Fail to add item to cart!");
+          else
+            Logger.printSuccess("Add item to cart successfully!");
         }));
         add(new ActionOption<>("use coupon", () -> {
           int couponNo = Helpers.requestIntInput(scanner, "Enter coupon No. to use: ", (value) -> {
@@ -436,9 +443,11 @@ public class MenuService {
           model.setWeight(product.getWeight());
       }
 
-      if (productService.updateProduct(model))
+      if (productService.updateProduct(model)) {
         Logger.printSuccess("Update product successfully!");
-      else
+        currentCart.syncProductInfo(product);
+        cartService.syncProductInfo(product);
+      } else
         Logger.printDanger("Update product failed!");
     } catch (RuntimeException e) {
       Logger.printError(this.getClass().getName(), "editProductScreen", e);

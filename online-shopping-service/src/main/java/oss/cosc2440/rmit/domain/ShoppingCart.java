@@ -44,8 +44,20 @@ public class ShoppingCart extends Domain<UUID> {
     return totalWeight() * Constants.BASE_FEE;
   }
 
+  public BigDecimal totalDiscount() {
+    return this.items.stream().map(CartItem::getDiscountAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
+  }
+
+  public BigDecimal totalTax() {
+    return this.items.stream().map(CartItem::getTaxAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
+  }
+
+  public BigDecimal totalOriginAmount() {
+    return this.items.stream().map(CartItem::getOriginAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
+  }
+
   public BigDecimal totalAmount() {
-    BigDecimal totalAmount = this.items.stream().map(CartItem::getItemPrice).reduce(BigDecimal.ZERO, BigDecimal::add);
+    BigDecimal totalAmount = this.items.stream().map(CartItem::getAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
     return totalAmount.add(BigDecimal.valueOf(shippingFee()));
   }
 
@@ -92,12 +104,12 @@ public class ShoppingCart extends Domain<UUID> {
   /**
    * Increase quantity of an item in shopping cart
    */
-  public boolean addItem(UUID cartId, Product product, int quantity) {
+  public boolean addItem(UUID itemId, Product product, int quantity) {
     if (product.getQuantity() < quantity)
       return false;
 
     Optional<CartItem> itemOpt = this.items.stream()
-        .filter(i -> i.getId().equals(cartId)).findFirst();
+        .filter(i -> i.getId().equals(itemId)).findFirst();
     if (itemOpt.isEmpty())
       return false;
     CartItem item = itemOpt.get();
@@ -111,15 +123,15 @@ public class ShoppingCart extends Domain<UUID> {
    * - Decrease item quantity if given quantity < item's quantity.
    * - Or remove entire item from the cart if given quantity >= item's quantity.
    */
-  public boolean removeItem(UUID cartId, Product product, int quantity) {
+  public boolean removeItem(UUID itemId, Product product, int quantity) {
     Optional<CartItem> itemOpt = this.items.stream()
-        .filter(i -> i.getId().equals(cartId)).findFirst();
+        .filter(i -> i.getId().equals(itemId)).findFirst();
     if (itemOpt.isEmpty())
       return false;
 
     CartItem item = itemOpt.get();
-    if (item.getQuantity() >= quantity) {
-      boolean isSuccess = this.items.removeIf(i -> i.getId().equals(cartId));
+    if (item.getQuantity() <= quantity) {
+      boolean isSuccess = this.items.removeIf(i -> i.getId().equals(itemId));
       if (isSuccess)
         product.increaseQuantity(item.getQuantity());
       return isSuccess;
@@ -137,8 +149,7 @@ public class ShoppingCart extends Domain<UUID> {
       return false;
 
     CartItem item = itemOpt.get();
-    if(item.getQuantity() == 1)
-    {
+    if (item.getQuantity() == 1) {
       item.setMessage(message);
       return true;
     }
@@ -186,11 +197,9 @@ public class ShoppingCart extends Domain<UUID> {
    * @param product updated product
    */
   public void syncProductInfo(Product product) {
-    if (isPurchased())
-      throw new IllegalStateException("Can not update product info for purchased shopping cart");
+    if (isPurchased()) return;
     List<CartItem> itemsToUpdate = items.stream().filter(i -> i.getProductId().equals(product.getId())).collect(Collectors.toList());
-    if (itemsToUpdate.isEmpty())
-      return;
+    if (itemsToUpdate.isEmpty()) return;
     for (CartItem item : itemsToUpdate) {
       item.syncProductInfo(product.getName(), product.getPrice(), product.getWeight(), product.getTaxType());
     }

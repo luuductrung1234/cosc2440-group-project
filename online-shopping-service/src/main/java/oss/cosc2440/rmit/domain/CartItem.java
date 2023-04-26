@@ -73,17 +73,18 @@ public class CartItem extends Domain<UUID> implements Gift, Splittable<CartItem>
     this.message = message;
   }
 
-  public BigDecimal getItemPrice() {
-    BigDecimal couponAmount = getItemCouponAmount();
-    BigDecimal taxAmount = getItemTaxAmount();
-
-    return BigDecimal.valueOf(productPrice)
-        .multiply(BigDecimal.valueOf(quantity))
-        .subtract(couponAmount)
-        .add(taxAmount);
+  public BigDecimal getAmount() {
+    BigDecimal originAmount = getOriginAmount();
+    BigDecimal couponAmount = getDiscountAmount();
+    BigDecimal taxAmount = getTaxAmount();
+    return originAmount.subtract(couponAmount).add(taxAmount);
   }
 
-  public BigDecimal getItemCouponAmount() {
+  public BigDecimal getOriginAmount() {
+    return BigDecimal.valueOf(productPrice).multiply(BigDecimal.valueOf(quantity));
+  }
+
+  public BigDecimal getDiscountAmount() {
     if (couponType == null) return BigDecimal.ZERO;
     BigDecimal couponAmount = BigDecimal.ZERO;
     switch (this.couponType) {
@@ -99,7 +100,7 @@ public class CartItem extends Domain<UUID> implements Gift, Splittable<CartItem>
     return couponAmount.multiply(BigDecimal.valueOf(quantity));
   }
 
-  public BigDecimal getItemTaxAmount() {
+  public BigDecimal getTaxAmount() {
     BigDecimal taxAmount = BigDecimal.ZERO;
     switch (this.taxType) {
       case TAX_FREE:
@@ -252,13 +253,5 @@ public class CartItem extends Domain<UUID> implements Gift, Splittable<CartItem>
 
   public String getCouponCode() {
     return couponCode;
-  }
-
-  public double getCouponValue() {
-    return couponValue;
-  }
-
-  public CouponType getCouponType() {
-    return couponType;
   }
 }
