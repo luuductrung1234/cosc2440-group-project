@@ -1,5 +1,9 @@
 package oss.cosc2440.rmit.domain;
 
+/**
+* @author Group 8
+*/
+
 import oss.cosc2440.rmit.seedwork.Constants;
 import oss.cosc2440.rmit.seedwork.Helpers;
 
@@ -8,9 +12,6 @@ import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
-/**
- * @author Luu Duc Trung - S3951127
- */
 public class ShoppingCart extends Domain<UUID> {
 
   /**

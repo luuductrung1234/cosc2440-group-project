@@ -1,5 +1,9 @@
 package oss.cosc2440.rmit.seedwork;
 
+/**
+* @author Group 8
+*/
+
 import org.junit.jupiter.api.Test;
 import oss.cosc2440.rmit.model.CreateProductModel;
 import oss.cosc2440.rmit.model.UpdateProductModel;

@@ -1,8 +1,9 @@
 package oss.cosc2440.rmit.seedwork;
 
 /**
- * @author Luu Duc Trung - S3951127
- */
+* @author Group 8
+*/
+
 public class ValueOption<T> extends InputOption {
     private T value;
 

@@ -1,5 +1,9 @@
 package oss.cosc2440.rmit.seedwork;
 
+/**
+* @author Group 8
+*/
+
 import oss.cosc2440.rmit.seedwork.constraint.*;
 
 import java.lang.reflect.Field;
@@ -21,8 +25,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * @author Luu Duc Trung - S3951127
- * <p>
  * Acknowledgement:
  * - Colin Hebert, "Check whether a String is not Null and not Empty", Stackoverflow, https://stackoverflow.com/a/3598792
  */

@@ -1,12 +1,14 @@
 package oss.cosc2440.rmit.domain;
 
+/**
+* @author Group 8
+*/
+
 import oss.cosc2440.rmit.seedwork.Helpers;
 
 import java.util.UUID;
 
-/**
- * @author Luu Duc Trung - S3951127
- */
+
 public class Product extends Domain<UUID> {
 
   /**

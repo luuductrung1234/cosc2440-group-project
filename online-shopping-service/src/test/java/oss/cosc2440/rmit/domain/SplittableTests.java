@@ -1,5 +1,9 @@
 package oss.cosc2440.rmit.domain;
 
+/**
+* @author Group 8
+*/
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;

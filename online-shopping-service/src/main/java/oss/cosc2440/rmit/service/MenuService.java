@@ -1,5 +1,9 @@
 package oss.cosc2440.rmit.service;
 
+/**
+* @author Group 8
+*/
+
 import oss.cosc2440.rmit.domain.*;
 import oss.cosc2440.rmit.model.CreateProductModel;
 import oss.cosc2440.rmit.model.SearchProductParameters;
@@ -11,8 +15,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * @author Luu Duc Trung - S3951127
- * <p>
  * Acknowledgement:
  * - WhiteFang34, "How to print color in console using System.out.println?", Stackoverflow, https://stackoverflow.com/a/5762502
  */

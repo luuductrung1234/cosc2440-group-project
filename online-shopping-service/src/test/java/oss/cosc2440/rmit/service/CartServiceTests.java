@@ -1,5 +1,9 @@
 package oss.cosc2440.rmit.service;
 
+/**
+* @author Group 8
+*/
+
 import org.junit.jupiter.api.Test;
 import oss.cosc2440.rmit.domain.ShoppingCart;
 import oss.cosc2440.rmit.seedwork.Constants;

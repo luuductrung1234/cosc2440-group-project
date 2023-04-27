@@ -1,5 +1,9 @@
 package oss.cosc2440.rmit.seedwork;
 
+/**
+* @author Group 8
+*/
+
 import oss.cosc2440.rmit.domain.ProductType;
 import oss.cosc2440.rmit.domain.TaxType;
 import oss.cosc2440.rmit.model.ProductSort;
@@ -9,9 +13,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * @author Luu Duc Trung - S3951127
- */
+
 public class Constants {
   public static final String PRODUCT_FILE_NAME = "products.txt";
   public static final String CART_FILE_NAME = "carts.txt";

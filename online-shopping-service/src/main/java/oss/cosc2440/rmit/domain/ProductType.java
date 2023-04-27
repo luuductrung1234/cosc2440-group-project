@@ -1,8 +1,9 @@
 package oss.cosc2440.rmit.domain;
 
 /**
- * @author Luu Duc Trung - S3951127
- */
+* @author Group 8
+*/
+
 public enum ProductType {
   DIGITAL,
   PHYSICAL

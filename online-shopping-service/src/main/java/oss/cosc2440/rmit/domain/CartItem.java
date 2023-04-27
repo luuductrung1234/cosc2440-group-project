@@ -1,14 +1,15 @@
 package oss.cosc2440.rmit.domain;
 
+/**
+* @author Group 8
+*/
+
 import oss.cosc2440.rmit.seedwork.Constants;
 import oss.cosc2440.rmit.seedwork.Helpers;
 
 import java.math.BigDecimal;
 import java.util.UUID;
 
-/**
- * @author Luu Duc Trung - S3951127
- */
 public class CartItem extends Domain<UUID> implements Gift, Splittable<CartItem> {
 
   /**

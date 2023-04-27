@@ -1,8 +1,9 @@
 package oss.cosc2440.rmit.seedwork;
 
 /**
- * @author Luu Duc Trung - S3951127
- */
+* @author Group 8
+*/
+
 public class Logger {
     public static void printError(String className, String methodName, Exception e) {
         Logger.printDanger("Class: %s\nMethod: %s\nError: %s\n", className, methodName, e.getMessage());

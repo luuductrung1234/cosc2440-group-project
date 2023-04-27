@@ -1,5 +1,9 @@
 package oss.cosc2440.rmit.service;
 
+/**
+* @author Group 8
+*/
+
 import oss.cosc2440.rmit.domain.CartItem;
 import oss.cosc2440.rmit.domain.Product;
 import oss.cosc2440.rmit.domain.ShoppingCart;
@@ -17,7 +21,6 @@ import java.util.stream.Collectors;
 import java.util.Scanner;
 
 /**
- * @author Luu Duc Trung - S3951127
  * Manage a collection of shopping carts (sorted by total weight, by default)
  */
 public class CartService {

@@ -1,5 +1,9 @@
 package oss.cosc2440.rmit.seedwork;
 
+/**
+* @author Group 8
+*/
+
 import oss.cosc2440.rmit.domain.Domain;
 
 import java.io.IOException;

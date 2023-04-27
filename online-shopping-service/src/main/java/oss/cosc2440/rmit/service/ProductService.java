@@ -1,5 +1,9 @@
 package oss.cosc2440.rmit.service;
 
+/**
+* @author Group 8
+*/
+
 import oss.cosc2440.rmit.domain.Coupon;
 import oss.cosc2440.rmit.domain.Product;
 import oss.cosc2440.rmit.model.CreateProductModel;

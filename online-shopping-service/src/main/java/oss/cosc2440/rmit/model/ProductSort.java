@@ -1,5 +1,9 @@
 package oss.cosc2440.rmit.model;
 
+/**
+* @author Group 8
+*/
+
 public enum ProductSort {
     NameAscending {
         @Override
