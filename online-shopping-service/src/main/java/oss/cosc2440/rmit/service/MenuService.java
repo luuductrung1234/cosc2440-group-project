@@ -101,6 +101,8 @@ public class MenuService {
 
           if (!currentCart.addItem(item.getId(), product, quantity))
             Logger.printWarning("fail to add item to cart!");
+          else
+            Logger.printSuccess("Add item to cart successfully!");
         }));
         actionOptions.add(new ActionOption<>("remove item", () -> {
           int itemNo = Helpers.requestIntInput(scanner, "Enter item No. to remove: ", (value) -> {
@@ -121,18 +123,23 @@ public class MenuService {
           });
 
           if (!currentCart.removeItem(item.getId(), product, quantity))
-            Logger.printWarning("fail to remove item to cart!");
+            Logger.printWarning("fail to remove item from cart!");
+          else
+            Logger.printSuccess("Remove item from cart successfully!");
         }));
         actionOptions.add(new ActionOption<>("apply coupon", () -> {
-          String couponCode = Helpers.requestStringInput(scanner, "Enter coupon code: ", (value) -> {
-            if (Helpers.isNullOrEmpty(value) || !productService.couponExist(value))
-              return ValidationResult.inValidInstance("Coupon not found!");
-            return ValidationResult.validInstance();
-          });
+          String couponCode = Helpers.requestStringInput(scanner, "Enter coupon code: ", (value) -> ValidationResult.validInstance());
+
+          if (Helpers.isNullOrEmpty(couponCode) || !productService.couponExist(couponCode)) {
+            Logger.printWarning("Coupon not found!");
+            return;
+          }
 
           Coupon coupon = productService.findCoupon(couponCode).orElseThrow();
           if (!currentCart.applyCoupon(coupon))
             Logger.printWarning("fail to apply coupon!");
+          else
+            Logger.printSuccess("Apply coupon successfully!");
         }));
         actionOptions.add(new ActionOption<>("clear coupon", () -> {
           Boolean isClear = Helpers.requestBooleanInput(scanner, "Do you want to continue? [y/n]: ");
@@ -151,8 +158,10 @@ public class MenuService {
           CartItem item = currentCart.getItems().get(itemNo);
           Product product = productService.findById(item.getProductId()).orElseThrow();
 
-          if (!product.canUseAsGift())
+          if (!product.canUseAsGift()) {
             Logger.printWarning("This product can not purchase as gift!");
+            return;
+          }
 
           String message = Helpers.requestStringInput(scanner, "Enter gift message: ", (value) -> {
             if (Helpers.isNullOrEmpty(value))
@@ -162,6 +171,8 @@ public class MenuService {
 
           if (!currentCart.setGiftMessage(item.getId(), message))
             Logger.printWarning("fail to set gift message!");
+          else
+            Logger.printSuccess("Set gift message successfully!");
         }));
         actionOptions.add(new ActionOption<>("submit", () -> {
           Boolean isSave = Helpers.requestBooleanInput(scanner, "Do you want to continue? [y/n]: ");
