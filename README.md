@@ -14,16 +14,16 @@ must have features
   - [x] `boolean removeItem(UUID itemId, Product product, int quantity)`
 - [x] Coupon
 - [x] Tax
-- [] Print purchase receipts to console or stored in a text file
+- [x] Print purchase receipts to console or stored in a text file
 - [x] Sort a list of all ShoppingCart by total weight (in increasing order)
 - [x] Update UI
-- [] Unit Test
+- [x] Unit Test
 
 documentation
 - [] Demo video (max 7 minutes, normal play speed)
 - [] PDF report (max 8 pages)
   - [] OOP design explanation
-  - [] UML diagram
+  - [x] UML diagram
   - [] Describe automatic/manual tests that are used to ensure quality of the system.
 
 
