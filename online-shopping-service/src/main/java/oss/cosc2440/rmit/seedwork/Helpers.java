@@ -28,6 +28,17 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Helpers {
+  /**
+   * Attach file extension if not exist
+   */
+  public static String attachFileExtension(String fileName) {
+    if (!fileName.contains(".")) return fileName + ".txt";
+    return fileName;
+  }
+
+  /**
+   * Using Java ClassLoader to load the resources/files
+   */
   public static String getPathToFile(ClassLoader loader, String fileName) {
     if (loader.getResource(fileName) == null) {
       Logger.printWarning("Not found data file %s", fileName);

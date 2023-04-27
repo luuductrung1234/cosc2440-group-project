@@ -89,20 +89,28 @@ public class CartService {
 
   private void printToFile(ShoppingCart cart) {
     Scanner scanner = new Scanner(System.in);
-    System.out.println("Please enter file name to print to:");
+    System.out.print("Please enter file name to print to: ");
     String fileName = scanner.nextLine();
+    fileName = Helpers.attachFileExtension(fileName);
 
     String directory;
     File directoryFile;
 
-        /*
-        prompts user for a location to store there file
-        EXAMPLE -
-        C:\Users\(USERNAME)\Downloads\receipt
-        */
+    Logger.printInfo("If you don't want to specify storage directory, skip following input.\n " +
+        "Directory {HOME}/Downloads/ will be used by default.\n");
+    /*
+    prompts user for a location to store there file
+    EXAMPLE -
+    C:\Users\(USERNAME)\Downloads\receipt
+    */
     while (true) {
-      System.out.println("Please enter directory to store the file:");
+      System.out.print("Please enter directory to store the file: ");
       directory = scanner.nextLine();
+
+      if(Helpers.isNullOrEmpty(directory)) {
+        directory = System.getProperty("user.home") + File.separator + "Downloads";
+        break;
+      }
 
       directoryFile = new File(directory);
       if (directoryFile.exists() && directoryFile.isDirectory()) {
