@@ -97,6 +97,9 @@ public class ProductService {
         model.getType(),
         model.getTaxType(),
         model.canUseAsGift());
+    if (isExisted(product.getName())){
+      return false;
+    }
     return products.add(product);
   }
 
@@ -114,8 +117,6 @@ public class ProductService {
         model.getWeight(),
         model.getTaxType(),
         model.canUseAsGift());
-
-    // TODO: sync new product info into non-purchased carts
     return true;
   }
 }
