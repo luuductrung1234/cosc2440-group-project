@@ -4,6 +4,7 @@ import oss.cosc2440.rmit.domain.CartItem;
 import oss.cosc2440.rmit.domain.Product;
 import oss.cosc2440.rmit.domain.ShoppingCart;
 import oss.cosc2440.rmit.seedwork.Deserializer;
+import oss.cosc2440.rmit.seedwork.Helpers;
 import oss.cosc2440.rmit.seedwork.Logger;
 
 import java.io.File;
@@ -49,33 +50,36 @@ public class CartService {
     }
 
     public void printReceipt(ShoppingCart cart, boolean printToFile) {
+        cart.purchase();
+
         if (printToFile) {
             printToFile(cart);
         } else {
             print(cart);
         }
-
-        cart.purchase();
     }
 
     private void print(ShoppingCart cart) {
         // Print to console
-        System.out.println("\n\n======== RECEIPT ========");
+        System.out.println("\n\n===============================================");
+        System.out.println("=================== RECEIPT ===================");
 
-        System.out.println(String.format("Date of purchase: %s", cart.getDateOfPurchase()));
+        System.out.printf("Date of purchase: %s%n", Helpers.toString(cart.getDateOfPurchase()));
         System.out.println("Items:");
         cart.getItems().forEach(item -> {
-            System.out.println(String.format("%s - $%.2f x %d", item.getProductName(), item.getProductPrice(), item.getQuantity()));
+            System.out.printf("%s - $%.2f x %d%n", item.getProductName(), item.getProductPrice(), item.getQuantity());
         });
 
-        System.out.println(String.format("\nSubtotal: $%.2f", cart.totalOriginAmount()));
-        System.out.println(String.format("Tax: $%.2f", cart.totalTax()));
-        System.out.println(String.format("Shipping fee: $%.2f", cart.shippingFee()));
-        System.out.println(String.format("Total Discount: $%.2f", cart.totalDiscount()));
-        System.out.println(String.format("Total: $%.2f", cart.totalAmount()));
+        System.out.printf("\nSubtotal: $%.2f%n", cart.totalOriginAmount());
+        System.out.printf("Tax: $%.2f%n", cart.totalTax());
+        System.out.printf("Shipping fee: $%.2f%n", cart.shippingFee());
+        System.out.printf("Total Discount: $%.2f%n", cart.totalDiscount());
+        System.out.printf("Total: $%.2f%n", cart.totalAmount());
 
         System.out.println("\nThank you for shopping with us!");
-        System.out.println("=========================");
+        System.out.println("===============================================");
+        System.out.println("===============================================");
+        System.out.println();
     }
 
     private void printToFile(ShoppingCart cart) {
@@ -114,7 +118,7 @@ public class CartService {
         try (FileWriter writer = new FileWriter(filePath)) {
             writer.write("======== RECEIPT ========\n\n");
 
-            writer.write(String.format("Date of purchase: %s\n\n", cart.getDateOfPurchase()));
+            writer.write(String.format("Date of purchase: %s\n\n", Helpers.toString(cart.getDateOfPurchase())));
 
             writer.write("Items:\n");
             cart.getItems().forEach(item -> {
@@ -133,7 +137,7 @@ public class CartService {
 
             writer.write("Thank you for shopping with us!\n");
             writer.write("=========================");
-            System.out.println(String.format("Receipt successfully created at %s", filePath));
+            System.out.printf("Receipt successfully created at %s%n", filePath);
         } catch (IOException e) {
             e.printStackTrace();
         }
