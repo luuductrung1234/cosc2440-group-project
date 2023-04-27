@@ -1,8 +1,11 @@
 package oss.cosc2440.rmit.service;
 
 /**
-* @author Group 8
-*/
+ * @author Group 8
+ * <p>
+ * Acknowledgement:
+ * - WhiteFang34, "How to print color in console using System.out.println?", Stackoverflow, https://stackoverflow.com/a/5762502
+ */
 
 import oss.cosc2440.rmit.domain.*;
 import oss.cosc2440.rmit.model.CreateProductModel;
@@ -14,10 +17,6 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
-/**
- * Acknowledgement:
- * - WhiteFang34, "How to print color in console using System.out.println?", Stackoverflow, https://stackoverflow.com/a/5762502
- */
 public class MenuService {
   private final Scanner scanner = new Scanner(System.in);
   private final ProductService productService;

@@ -1,8 +1,11 @@
 package oss.cosc2440.rmit.seedwork;
 
 /**
-* @author Group 8
-*/
+ * @author Group 8
+ * <p>
+ * Acknowledgement:
+ * - Colin Hebert, "Check whether a String is not Null and not Empty", Stackoverflow, https://stackoverflow.com/a/3598792
+ */
 
 import oss.cosc2440.rmit.seedwork.constraint.*;
 
@@ -24,10 +27,6 @@ import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- * Acknowledgement:
- * - Colin Hebert, "Check whether a String is not Null and not Empty", Stackoverflow, https://stackoverflow.com/a/3598792
- */
 public class Helpers {
   public static String getPathToFile(ClassLoader loader, String fileName) {
     if (loader.getResource(fileName) == null) {

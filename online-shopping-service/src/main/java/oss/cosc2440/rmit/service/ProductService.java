@@ -19,7 +19,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * @author Luu Duc Trung - S3951127
  * Management a collection of products
  */
 public class ProductService {
