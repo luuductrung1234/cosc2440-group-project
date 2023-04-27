@@ -33,30 +33,51 @@ public class ShoppingCart extends Domain<UUID> {
     this.dateOfPurchase = dateOfPurchase;
   }
 
+  /**
+   * Get total quantity of cart
+   */
   public int totalQuantity() {
     return this.items.stream().mapToInt(CartItem::getQuantity).sum();
   }
 
+  /**
+   * Get total weight of cart
+   */
   public double totalWeight() {
     return this.items.stream().mapToDouble(CartItem::getItemWeight).sum();
   }
 
+  /**
+   * Get calculated shipping fee
+   */
   public double shippingFee() {
     return totalWeight() * Constants.BASE_FEE;
   }
 
+  /**
+   * Get total discount of all applied coupon items
+   */
   public BigDecimal totalDiscount() {
     return this.items.stream().map(CartItem::getDiscountAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
   }
 
+  /**
+   * Get total tax
+   */
   public BigDecimal totalTax() {
     return this.items.stream().map(CartItem::getTaxAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
   }
 
+  /**
+   * Get total amount before apply coupon and tax
+   */
   public BigDecimal totalOriginAmount() {
     return this.items.stream().map(CartItem::getOriginAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
   }
 
+  /**
+   * Get total amount after apply coupon and tax
+   */
   public BigDecimal totalAmount() {
     BigDecimal totalAmount = this.items.stream().map(CartItem::getAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
     return totalAmount.add(BigDecimal.valueOf(shippingFee()));
@@ -148,6 +169,10 @@ public class ShoppingCart extends Domain<UUID> {
     return true;
   }
 
+  /**
+   * Set gift message to cart item (override old message if it is existed).
+   * If a given item is not a gift, and it's quantity > 1. Split it into a separated item, then assign gift message
+   */
   public boolean setGiftMessage(UUID cartId, String message) {
     Optional<CartItem> itemOpt = this.items.stream()
         .filter(i -> i.getId().equals(cartId)).findFirst();
@@ -155,17 +180,23 @@ public class ShoppingCart extends Domain<UUID> {
       return false;
 
     CartItem item = itemOpt.get();
+    // if given item has quantity = 1, set gift message to it directly
     if (item.getQuantity() == 1) {
       item.setMessage(message);
       return true;
     }
 
+    // else, split it into a separated item
     CartItem splitItem = item.split();
+    // then assign gift message to split item
     splitItem.setMessage(message);
     this.items.add(splitItem);
     return true;
   }
 
+  /**
+   * Find all items which are applied coupon
+   */
   public List<CartItem> getItemsAppliedCoupon() {
     return this.items.stream().filter(CartItem::appliedCoupon).collect(Collectors.toList());
   }

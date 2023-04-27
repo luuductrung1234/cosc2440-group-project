@@ -8,8 +8,6 @@ import oss.cosc2440.rmit.domain.ProductType;
 import oss.cosc2440.rmit.domain.TaxType;
 import oss.cosc2440.rmit.model.ProductSort;
 
-import java.io.File;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 

@@ -74,6 +74,9 @@ public class CartItem extends Domain<UUID> implements Gift, Splittable<CartItem>
     this.message = message;
   }
 
+  /**
+   * Get total amount of cart item after apply coupon + tax
+   */
   public BigDecimal getAmount() {
     BigDecimal originAmount = getOriginAmount();
     BigDecimal couponAmount = getDiscountAmount();
@@ -81,10 +84,16 @@ public class CartItem extends Domain<UUID> implements Gift, Splittable<CartItem>
     return originAmount.subtract(couponAmount).add(taxAmount);
   }
 
+  /**
+   * Get total amount of cart item before apply coupon + tax
+   */
   public BigDecimal getOriginAmount() {
     return BigDecimal.valueOf(productPrice).multiply(BigDecimal.valueOf(quantity));
   }
 
+  /**
+   * Get discount (calculated amount based on applied coupon)
+   */
   public BigDecimal getDiscountAmount() {
     if (couponType == null) return BigDecimal.ZERO;
     BigDecimal couponAmount = BigDecimal.ZERO;
@@ -101,6 +110,9 @@ public class CartItem extends Domain<UUID> implements Gift, Splittable<CartItem>
     return couponAmount.multiply(BigDecimal.valueOf(quantity));
   }
 
+  /**
+   * Get discount (calculated amount based on product's tax type)
+   */
   public BigDecimal getTaxAmount() {
     BigDecimal taxAmount = BigDecimal.ZERO;
     switch (this.taxType) {
@@ -123,6 +135,9 @@ public class CartItem extends Domain<UUID> implements Gift, Splittable<CartItem>
     return taxAmount.multiply(BigDecimal.valueOf(quantity));
   }
 
+  /**
+   * Get total weight of cart item
+   */
   public double getItemWeight() {
     return productWeight * quantity;
   }
@@ -153,6 +168,9 @@ public class CartItem extends Domain<UUID> implements Gift, Splittable<CartItem>
     this.couponType = null;
   }
 
+  /**
+   * Sync new product information to snapshot fields
+   */
   public void syncProductInfo(String productName, double productPrice, double productWeight, TaxType taxType) {
 
     this.productName = productName;

@@ -26,6 +26,7 @@ import java.util.Scanner;
 public class CartService {
     private final List<ShoppingCart> carts;
 
+    // Constructor
     public CartService(String pathToFile) {
         carts = new ArrayList<>();
         try {

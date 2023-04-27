@@ -19,13 +19,14 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * Management a collection of products
+ * Manage collections of products and coupons
  */
 public class ProductService {
 
   private final List<Product> products;
   private final List<Coupon> coupons;
 
+  // Constructor
   public ProductService(String pathToFile) {
     products = new ArrayList<>();
     coupons = new ArrayList<>();
