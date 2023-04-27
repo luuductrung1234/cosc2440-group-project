@@ -10,7 +10,6 @@ import oss.cosc2440.rmit.seedwork.Constants;
 import oss.cosc2440.rmit.seedwork.Helpers;
 
 import java.util.List;
-import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -18,7 +17,7 @@ public class CartServiceTests {
   @Test
   public void getAllCartInAscendingWeightOrderTest() {
     // Setup
-    ClassLoader loader = ProductServiceTests.class.getClassLoader();
+    ClassLoader loader = CartServiceTests.class.getClassLoader();
     CartService cartService = new CartService(Helpers.getPathToFile(loader, Constants.CART_FILE_NAME));
 
     // Action
@@ -37,7 +36,7 @@ public class CartServiceTests {
   @Test
   public void addShoppingCartShouldSuccess() {
     // Setup
-    ClassLoader loader = ProductServiceTests.class.getClassLoader();
+    ClassLoader loader = CartServiceTests.class.getClassLoader();
     CartService cartService = new CartService(Helpers.getPathToFile(loader, Constants.CART_FILE_NAME));
 
     // Action

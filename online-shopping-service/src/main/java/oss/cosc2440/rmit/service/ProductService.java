@@ -92,6 +92,11 @@ public class ProductService {
   }
 
   public boolean addProduct(CreateProductModel model) {
+    if (isExisted(model.getName())){
+      Logger.printWarning("Product name '%s' already existed.", model.getName());
+      return false;
+    }
+
     Product product = new Product(
         model.getName(),
         model.getDescription(),
@@ -101,9 +106,6 @@ public class ProductService {
         model.getType(),
         model.getTaxType(),
         model.canUseAsGift());
-    if (isExisted(product.getName())){
-      return false;
-    }
     return products.add(product);
   }
 

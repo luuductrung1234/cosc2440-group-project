@@ -14,19 +14,20 @@ public class SplittableTests {
   public void splitCartItemsShouldSuccess() {
     // Set up
     CartItem cartItem = new CartItem(
-      UUID.randomUUID(), 
-      UUID.randomUUID(), 
-      UUID.randomUUID(), 
-      "Iphone 14", 
-      1000, 
-      5.5, 
-      TaxType.LUXURY_TAX, 
-      100, 
-      "C001", 
-      10, 
-      CouponType.PERCENT, 
+      UUID.randomUUID(),
+      UUID.randomUUID(),
+      UUID.randomUUID(),
+      "Iphone 14",
+      1000,
+      5.5,
+      TaxType.LUXURY_TAX,
+      100,
+      "C001",
+      10,
+      CouponType.PERCENT,
       "message");
 
+      // Action
       CartItem splitItem = cartItem.split();
 
       // Assert
