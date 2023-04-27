@@ -333,6 +333,7 @@ public class MenuService {
         System.out.printf("%-16s: %-10.2f \n", "Weight", product.getWeight());
       else
         System.out.printf("%-16s: %-10s \n", "Weight", "n/a");
+      System.out.printf("%-16s: %-10s \n", "Description", product.getDescription());
       System.out.printf("%-16s: %-10s \n", "Can use as gift", product.canUseAsGift() ? "yes" : "no");
 
       System.out.println("\nCoupons:");
@@ -354,7 +355,10 @@ public class MenuService {
           else
             Logger.printSuccess("Add item to cart successfully!");
         }));
-        add(new ActionOption<>("use coupon", () -> {
+      }};
+
+      if (!coupons.isEmpty()) {
+        actionOptions.add(new ActionOption<>("use coupon", () -> {
           int couponNo = Helpers.requestIntInput(scanner, "Enter coupon No. to use: ", (value) -> {
             if (value < 0 || value >= coupons.size()) {
               return ValidationResult.inValidInstance("Given coupon No. is out of index.");
@@ -366,9 +370,9 @@ public class MenuService {
           else
             Logger.printSuccess("Apply coupon successfully!");
         }));
-        add(new ActionOption<>("go back", () -> goBack.set(true)));
-      }};
+      }
 
+      actionOptions.add(new ActionOption<>("go back", () -> goBack.set(true)));
       Helpers.requestSelectAction(scanner, "Your choice [0-" + (actionOptions.size() - 1) + "]: ", actionOptions);
     } while (!goBack.get());
   }
