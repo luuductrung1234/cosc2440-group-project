@@ -1,5 +1,9 @@
 package oss.cosc2440.rmit.model;
 
+/**
+* @author Group 8
+*/
+
 import oss.cosc2440.rmit.domain.ProductType;
 import oss.cosc2440.rmit.domain.TaxType;
 

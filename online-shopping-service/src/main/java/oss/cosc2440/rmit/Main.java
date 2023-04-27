@@ -1,14 +1,16 @@
 package oss.cosc2440.rmit;
 
+/**
+* @author Group 8
+*/
+
 import oss.cosc2440.rmit.seedwork.Constants;
 import oss.cosc2440.rmit.seedwork.Helpers;
 import oss.cosc2440.rmit.service.CartService;
 import oss.cosc2440.rmit.service.MenuService;
 import oss.cosc2440.rmit.service.ProductService;
 
-/**
- * @author Luu Duc Trung - S3951127
- */
+
 public class Main {
   public static void main(String[] args) {
     ClassLoader loader = Main.class.getClassLoader();

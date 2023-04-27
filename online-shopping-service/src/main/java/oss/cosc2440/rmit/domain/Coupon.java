@@ -1,5 +1,9 @@
 package oss.cosc2440.rmit.domain;
 
+/**
+* @author Group 8
+*/
+
 import oss.cosc2440.rmit.seedwork.Helpers;
 
 import java.util.UUID;

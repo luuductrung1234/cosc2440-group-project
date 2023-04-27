@@ -1,22 +1,24 @@
 package oss.cosc2440.rmit.service;
 
+/**
+* @author Group 8
+*/
+
 import org.junit.jupiter.api.Test;
 import oss.cosc2440.rmit.domain.ShoppingCart;
 import oss.cosc2440.rmit.seedwork.Constants;
+import oss.cosc2440.rmit.seedwork.Helpers;
 
 import java.util.List;
-import java.util.Objects;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class CartServiceTests {
   @Test
   public void getAllCartInAscendingWeightOrderTest() {
     // Setup
-    ClassLoader loader = ProductServiceTests.class.getClassLoader();
-    String pathToFile = Objects.requireNonNull(loader.getResource(Constants.CART_FILE_NAME)).getPath();
-    CartService cartService = new CartService(pathToFile);
+    ClassLoader loader = CartServiceTests.class.getClassLoader();
+    CartService cartService = new CartService(Helpers.getPathToFile(loader, Constants.CART_FILE_NAME));
 
     // Action
     List<ShoppingCart> carts = cartService.listAll();
@@ -32,7 +34,17 @@ public class CartServiceTests {
   }
 
   @Test
-  public void addShoppingCartTest() {
-    // TODO: write test
+  public void addShoppingCartShouldSuccess() {
+    // Setup
+    ClassLoader loader = CartServiceTests.class.getClassLoader();
+    CartService cartService = new CartService(Helpers.getPathToFile(loader, Constants.CART_FILE_NAME));
+
+    // Action
+    ShoppingCart cart1 = new ShoppingCart();
+    int cartSize = cartService.listAll().size();
+    cartService.submit(cart1);
+
+    // Assert
+    assertEquals(cartSize+1, cartService.listAll().size());
   }
 }

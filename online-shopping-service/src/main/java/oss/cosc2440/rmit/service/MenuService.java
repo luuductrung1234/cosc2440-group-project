@@ -1,5 +1,12 @@
 package oss.cosc2440.rmit.service;
 
+/**
+ * @author Group 8
+ * <p>
+ * Acknowledgement:
+ * - WhiteFang34, "How to print color in console using System.out.println?", Stackoverflow, https://stackoverflow.com/a/5762502
+ */
+
 import oss.cosc2440.rmit.domain.*;
 import oss.cosc2440.rmit.model.CreateProductModel;
 import oss.cosc2440.rmit.model.SearchProductParameters;
@@ -10,12 +17,6 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
-/**
- * @author Luu Duc Trung - S3951127
- * <p>
- * Acknowledgement:
- * - WhiteFang34, "How to print color in console using System.out.println?", Stackoverflow, https://stackoverflow.com/a/5762502
- */
 public class MenuService {
   private final Scanner scanner = new Scanner(System.in);
   private final ProductService productService;
@@ -206,6 +207,16 @@ public class MenuService {
       }
 
       List<ActionOption<Runnable>> actionOptions = new ArrayList<>() {{
+        add(new ActionOption<>("view detail", () -> {
+          int cartNo = Helpers.requestIntInput(scanner, "Enter cart No. to view detail: ", (value) -> {
+            if (value < 0 || value >= carts.size()) {
+              return ValidationResult.inValidInstance("Given cart No. is out of index.");
+            }
+            return ValidationResult.validInstance();
+          });
+
+          cartDetailScreen(carts.get(cartNo).getId());
+        }));
         add(new ActionOption<>("print receipt", () -> {
           int cartNo = Helpers.requestIntInput(scanner, "Enter cart No. to print receipt: ", (value) -> {
             if (value < 0 || value >= carts.size()) {
@@ -216,6 +227,53 @@ public class MenuService {
 
           Boolean printToFile = Helpers.requestBooleanInput(scanner, "Do you want to print to file? [y/n]: ");
           cartService.printReceipt(carts.get(cartNo), printToFile);
+        }));
+      }};
+
+      addCommonActions(actionOptions, goBack);
+      Helpers.requestSelectAction(scanner, "Your choice [0-" + (actionOptions.size() - 1) + "]: ", actionOptions);
+    } while (!goBack.get());
+  }
+
+  public void cartDetailScreen(UUID cartId) {
+    AtomicBoolean goBack = new AtomicBoolean(false);
+    do {
+      banner("cart");
+
+      ShoppingCart cart = cartService.findById(cartId).orElseThrow();
+
+      System.out.printf("%-20s: %s\n", "Date of Purchase", Helpers.toString(cart.getDateOfPurchase()));
+      System.out.printf("%-20s: %.2f\n", "Weight", cart.totalWeight());
+      System.out.printf("%-20s: %d\n", "Quantity", cart.totalQuantity());
+
+      List<CartItem> itemsAppliedCoupon = cart.getItemsAppliedCoupon();
+      if (!itemsAppliedCoupon.isEmpty()) {
+        System.out.printf("%-20s: %s\n", "Coupon", itemsAppliedCoupon.stream().findFirst().get().getCouponCode());
+        System.out.println();
+      } else System.out.println();
+
+      System.out.printf("%-7s %-35s %-15s %-20s %-15s %-12s %-20s\n", "No.", "name", "quantity", "price", "weight", "tax", "message");
+      System.out.println("-".repeat(130));
+      if (cart.getItems().isEmpty())
+        Logger.printInfo("Cart is empty...");
+      for (int itemNo = 0; itemNo < cart.getItems().size(); itemNo++) {
+        CartItem item = cart.getItems().get(itemNo);
+        System.out.printf("%-7s %-35s %-15s %-20s %-15s %-12s %-20s\n", itemNo, item.getProductName(),
+            item.getQuantity(), Helpers.toString(item.getProductPrice(), "USD", true),
+            item.getProductWeight(), item.getTaxType(), Helpers.isNullOrEmpty(item.getMessage()) ? "-" : item.getMessage());
+      }
+
+      System.out.println();
+      System.out.printf("%-20s: %s\n", "Total Origin Amount", Helpers.toString(cart.totalOriginAmount()));
+      System.out.printf("%-20s: + %s\n", "Tax", Helpers.toString(cart.totalTax()));
+      System.out.printf("%-20s: - %s\n", "Discount", Helpers.toString(cart.totalDiscount()));
+      System.out.printf("%-20s: + %s\n", "Shipping Fee", Helpers.toString(cart.shippingFee(), "USD", true));
+      System.out.printf("%-20s: %s\n", "Total Amount", Helpers.toString(cart.totalAmount()));
+
+      List<ActionOption<Runnable>> actionOptions = new ArrayList<>() {{
+        add(new ActionOption<>("print receipt", () -> {
+          Boolean printToFile = Helpers.requestBooleanInput(scanner, "Do you want to print to file? [y/n]: ");
+          cartService.printReceipt(cart, printToFile);
         }));
       }};
 

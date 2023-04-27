@@ -1,5 +1,9 @@
 package oss.cosc2440.rmit.service;
 
+/**
+* @author Group 8
+*/
+
 import oss.cosc2440.rmit.domain.Coupon;
 import oss.cosc2440.rmit.domain.Product;
 import oss.cosc2440.rmit.model.CreateProductModel;
@@ -15,14 +19,14 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * @author Luu Duc Trung - S3951127
- * Management a collection of products
+ * Manage collections of products and coupons
  */
 public class ProductService {
 
   private final List<Product> products;
   private final List<Coupon> coupons;
 
+  // Constructor
   public ProductService(String pathToFile) {
     products = new ArrayList<>();
     coupons = new ArrayList<>();
@@ -88,6 +92,11 @@ public class ProductService {
   }
 
   public boolean addProduct(CreateProductModel model) {
+    if (isExisted(model.getName())){
+      Logger.printWarning("Product name '%s' already existed.", model.getName());
+      return false;
+    }
+
     Product product = new Product(
         model.getName(),
         model.getDescription(),
@@ -114,8 +123,6 @@ public class ProductService {
         model.getWeight(),
         model.getTaxType(),
         model.canUseAsGift());
-
-    // TODO: sync new product info into non-purchased carts
     return true;
   }
 }
