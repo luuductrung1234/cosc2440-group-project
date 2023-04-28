@@ -24,7 +24,7 @@ documentation
 - [] PDF report (max 8 pages)
   - [] OOP design explanation
   - [x] UML diagram
-  - [] Describe automatic/manual tests that are used to ensure quality of the system.
+  - [x] Describe automatic/manual tests that are used to ensure quality of the system.
 
 
 ## Coupon
