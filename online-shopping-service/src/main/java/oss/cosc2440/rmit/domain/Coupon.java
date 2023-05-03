@@ -15,13 +15,22 @@ public class Coupon extends Domain<UUID> {
    */
   private final String code;
   private final CouponType type;
-  private final double price;
-  private final int percent;
+  private double price;
+  private int percent;
   private final UUID targetProduct;
 
   /**
    * Constructor
    */
+  public Coupon(String code, CouponType type, double price, int percent, UUID targetProduct) {
+    super(UUID.randomUUID());
+    this.code = code;
+    this.type = type;
+    this.price = price;
+    this.percent = percent;
+    this.targetProduct = targetProduct;
+  }
+
   public Coupon(UUID uuid, String code, CouponType type, double price, int percent, UUID targetProduct) {
     super(uuid);
     this.code = code;
@@ -29,6 +38,11 @@ public class Coupon extends Domain<UUID> {
     this.price = price;
     this.percent = percent;
     this.targetProduct = targetProduct;
+  }
+
+  public void update(double price, int percent) {
+    this.price = price;
+    this.percent = percent;
   }
 
   @Override

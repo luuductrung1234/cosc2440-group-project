@@ -6,9 +6,7 @@ package oss.cosc2440.rmit.service;
 
 import oss.cosc2440.rmit.domain.Coupon;
 import oss.cosc2440.rmit.domain.Product;
-import oss.cosc2440.rmit.model.CreateProductModel;
-import oss.cosc2440.rmit.model.SearchProductParameters;
-import oss.cosc2440.rmit.model.UpdateProductModel;
+import oss.cosc2440.rmit.model.*;
 import oss.cosc2440.rmit.seedwork.Deserializer;
 import oss.cosc2440.rmit.seedwork.Helpers;
 import oss.cosc2440.rmit.seedwork.Logger;
@@ -38,7 +36,7 @@ public class ProductService {
     }
   }
 
-  public List<Product> listAll(SearchProductParameters parameters) {
+  public List<Product> listAllProducts(SearchProductParameters parameters) {
     Stream<Product> stream = products.stream();
     if (!Helpers.isNullOrEmpty(parameters.getName()))
       stream = stream.filter(p -> p.getName().toUpperCase().contains(parameters.getName().toUpperCase()));
@@ -71,7 +69,16 @@ public class ProductService {
     return stream.collect(Collectors.toList());
   }
 
-  public Optional<Product> findById(UUID productId) {
+  public List<Coupon> listAllCoupons(SearchCouponParameter parameters) {
+    Stream<Coupon> stream = coupons.stream();
+    if (!Helpers.isNullOrEmpty(parameters.getCode()))
+      stream = stream.filter(p -> p.getCode().toUpperCase().contains(parameters.getCode().toUpperCase()));
+    if (parameters.getType() != null)
+      stream = stream.filter(p -> p.getType().equals(parameters.getType()));
+    return stream.collect(Collectors.toList());
+  }
+
+  public Optional<Product> findProduct(UUID productId) {
     return products.stream().filter(p -> p.getId().equals(productId)).findFirst();
   }
 
@@ -79,20 +86,21 @@ public class ProductService {
     return coupons.stream().filter(c -> c.getTargetProduct().equals(productId)).collect(Collectors.toList());
   }
 
-  public boolean couponExist(String code) {
-    return coupons.stream().anyMatch(c -> c.getCode().equalsIgnoreCase(code));
-  }
-
   public Optional<Coupon> findCoupon(String code) {
     return coupons.stream().filter(c -> c.getCode().equalsIgnoreCase(code)).findFirst();
   }
 
-  public boolean isExisted(String name) {
+  public boolean couponExist(String code) {
+    return coupons.stream().anyMatch(c -> c.getCode().equalsIgnoreCase(code));
+  }
+
+
+  public boolean productExist(String name) {
     return products.stream().anyMatch(p -> p.getName().equals(name));
   }
 
   public boolean addProduct(CreateProductModel model) {
-    if (isExisted(model.getName())){
+    if (productExist(model.getName())){
       Logger.printWarning("Product name '%s' already existed.", model.getName());
       return false;
     }
@@ -110,7 +118,7 @@ public class ProductService {
   }
 
   public boolean updateProduct(UpdateProductModel model) {
-    Optional<Product> productOpt = findById(model.getId());
+    Optional<Product> productOpt = findProduct(model.getId());
     if (productOpt.isEmpty())
       return false;
 
@@ -123,6 +131,26 @@ public class ProductService {
         model.getWeight(),
         model.getTaxType(),
         model.canUseAsGift());
+    return true;
+  }
+
+  public boolean addCoupon(CreateCouponModel model) {
+    Coupon coupon = new Coupon(
+        "CP" + String.format("%03d", coupons.size() + 1),
+        model.getType(),
+        model.getPrice(),
+        model.getPercent(),
+        model.getTargetProduct());
+    return coupons.add(coupon);
+  }
+
+  public boolean updateCoupon(UpdateCouponModel model) {
+    Optional<Coupon> couponOpt = coupons.stream().filter(c -> c.getId().equals(model.getId())).findFirst();
+    if (couponOpt.isEmpty())
+      return false;
+
+    Coupon coupon = couponOpt.get();
+    coupon.update(model.getPrice(), model.getPercent());
     return true;
   }
 }

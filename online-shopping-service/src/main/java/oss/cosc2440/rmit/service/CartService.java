@@ -5,6 +5,7 @@ package oss.cosc2440.rmit.service;
  */
 
 import oss.cosc2440.rmit.domain.CartItem;
+import oss.cosc2440.rmit.domain.Coupon;
 import oss.cosc2440.rmit.domain.Product;
 import oss.cosc2440.rmit.domain.ShoppingCart;
 import oss.cosc2440.rmit.seedwork.Deserializer;
@@ -48,6 +49,11 @@ public class CartService {
   public void syncProductInfo(Product product) {
     List<ShoppingCart> carts = listAll().stream().filter(c -> !c.isPurchased()).collect(Collectors.toList());
     carts.forEach(c -> c.syncProductInfo(product));
+  }
+
+  public void syncCouponInfo(Coupon coupon) {
+    List<ShoppingCart> carts = listAll().stream().filter(c -> !c.isPurchased()).collect(Collectors.toList());
+    carts.forEach(c -> c.syncCouponInfo(coupon));
   }
 
   public void submit(ShoppingCart cart) {

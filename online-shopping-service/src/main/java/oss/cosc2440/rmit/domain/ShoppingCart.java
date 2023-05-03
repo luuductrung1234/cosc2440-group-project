@@ -242,6 +242,22 @@ public class ShoppingCart extends Domain<UUID> {
     }
   }
 
+  /**
+   * Only Sync coupon information (after update) for shopping cart has not been purchased
+   *
+   * @param coupon updated coupon
+   */
+  public void syncCouponInfo(Coupon coupon) {
+    if (isPurchased()) return;
+    List<CartItem> itemsToUpdate = items.stream()
+        .filter(i -> !Helpers.isNullOrEmpty(i.getCouponCode()))
+        .filter(i -> i.getCouponCode().equals(coupon.getCode())).collect(Collectors.toList());
+    if (itemsToUpdate.isEmpty()) return;
+    for (CartItem item : itemsToUpdate) {
+      item.syncCouponInfo(coupon.getValue());
+    }
+  }
+
   public void purchase() {
     if (isPurchased()) return;
     dateOfPurchase = Instant.now();

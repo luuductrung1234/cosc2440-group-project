@@ -28,7 +28,7 @@ public class ProductServiceTests {
     ProductService productService = new ProductService(Helpers.getPathToFile(loader, Constants.PRODUCT_FILE_NAME));
 
     // Action
-    List<Product> products = productService.listAll(new SearchProductParameters());
+    List<Product> products = productService.listAllProducts(new SearchProductParameters());
 
     // Assert
     assertNotNull(products);
@@ -90,7 +90,7 @@ public class ProductServiceTests {
     ProductService productService = new ProductService(Helpers.getPathToFile(loader, Constants.PRODUCT_FILE_NAME));
 
     // Action
-    Optional<Product> productOptional = productService.findById(UUID.fromString("c6fbde46-272f-4f42-81b5-e2cd8058b638"));
+    Optional<Product> productOptional = productService.findProduct(UUID.fromString("c6fbde46-272f-4f42-81b5-e2cd8058b638"));
     Product product = productOptional.get();
 
     UpdateProductModel uModel = new UpdateProductModel();

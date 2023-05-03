@@ -180,6 +180,13 @@ public class CartItem extends Domain<UUID> implements Gift, Splittable<CartItem>
   }
 
   /**
+   * Sync new coupon information to snapshot fields
+   */
+  public void syncCouponInfo(double couponValue) {
+    this.couponValue = couponValue;
+  }
+
+  /**
    * override static method Domain deserialize
    *
    * @param data serialized string data

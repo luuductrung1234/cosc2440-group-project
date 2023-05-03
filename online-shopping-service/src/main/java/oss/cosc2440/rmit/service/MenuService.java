@@ -8,14 +8,13 @@ package oss.cosc2440.rmit.service;
  */
 
 import oss.cosc2440.rmit.domain.*;
-import oss.cosc2440.rmit.model.CreateProductModel;
-import oss.cosc2440.rmit.model.SearchProductParameters;
-import oss.cosc2440.rmit.model.UpdateProductModel;
+import oss.cosc2440.rmit.model.*;
 import oss.cosc2440.rmit.seedwork.*;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 public class MenuService {
   private final Scanner scanner = new Scanner(System.in);
@@ -41,6 +40,7 @@ public class MenuService {
         add(new ActionOption<>("show current cart", () -> showCartScreen()));
         add(new ActionOption<>("list products", () -> listProductsScreen()));
         add(new ActionOption<>("list carts", () -> listCartsScreen()));
+        add(new ActionOption<>("list coupons", () -> listCouponsScreen()));
         add(new ActionOption<>("exit", () -> exitScreen()));
       }};
       Helpers.requestSelectAction(scanner, "Your choice [0-7]: ", commonOptions);
@@ -91,7 +91,7 @@ public class MenuService {
           });
 
           CartItem item = currentCart.getItems().get(itemNo);
-          Product product = productService.findById(item.getProductId()).orElseThrow();
+          Product product = productService.findProduct(item.getProductId()).orElseThrow();
 
           int quantity = Helpers.requestIntInput(scanner, "Enter quantity to add: ", (value) -> {
             if (value < 0 || value > product.getQuantity()) {
@@ -114,7 +114,7 @@ public class MenuService {
           });
 
           CartItem item = currentCart.getItems().get(itemNo);
-          Product product = productService.findById(item.getProductId()).orElseThrow();
+          Product product = productService.findProduct(item.getProductId()).orElseThrow();
 
           int quantity = Helpers.requestIntInput(scanner, "Enter quantity to remove: ", (value) -> {
             if (value < 0) {
@@ -157,7 +157,7 @@ public class MenuService {
           });
 
           CartItem item = currentCart.getItems().get(itemNo);
-          Product product = productService.findById(item.getProductId()).orElseThrow();
+          Product product = productService.findProduct(item.getProductId()).orElseThrow();
 
           if (!product.canUseAsGift()) {
             Logger.printWarning("This product can not purchase as gift!");
@@ -264,11 +264,11 @@ public class MenuService {
       }
 
       System.out.println();
-      System.out.printf("%-20s: %s\n", "Total Origin Amount", Helpers.toString(cart.totalOriginAmount()));
+      System.out.printf("%-20s:   %s\n", "Total Origin Amount", Helpers.toString(cart.totalOriginAmount()));
       System.out.printf("%-20s: + %s\n", "Tax", Helpers.toString(cart.totalTax()));
       System.out.printf("%-20s: - %s\n", "Discount", Helpers.toString(cart.totalDiscount()));
       System.out.printf("%-20s: + %s\n", "Shipping Fee", Helpers.toString(cart.shippingFee(), "USD", true));
-      System.out.printf("%-20s: %s\n", "Total Amount", Helpers.toString(cart.totalAmount()));
+      System.out.printf("%-20s:   %s\n", "Total Amount", Helpers.toString(cart.totalAmount()));
 
       List<ActionOption<Runnable>> actionOptions = new ArrayList<>() {{
         add(new ActionOption<>("print receipt", () -> {
@@ -287,7 +287,7 @@ public class MenuService {
     AtomicBoolean goBack = new AtomicBoolean(false);
     do {
       banner("products");
-      List<Product> products = productService.listAll(searchParameters.get());
+      List<Product> products = productService.listAllProducts(searchParameters.get());
       System.out.printf("search by\n" +
               "\tname: %-20s\n" +
               "\ttype: %-20s\n" +
@@ -376,7 +376,7 @@ public class MenuService {
     AtomicBoolean goBack = new AtomicBoolean(false);
     do {
       banner("product detail");
-      Optional<Product> productOpt = productService.findById(productId);
+      Optional<Product> productOpt = productService.findProduct(productId);
       if (productOpt.isEmpty())
         throw new IllegalStateException("Product with id: " + productId + " not found!");
       List<Coupon> coupons = productService.findCoupon(productId);
@@ -478,7 +478,7 @@ public class MenuService {
       Logger.printInfo(String.format("Old name: %s", product.getName()));
       String name = Helpers.requestInput(scanner, "Enter product name: ",
           value -> Helpers.isNullOrEmpty(value) ? null : value,
-          value -> productService.isExisted(value) ? ValidationResult.inValidInstance("Product name already exist") : ValidationResult.validInstance());
+          value -> productService.productExist(value) ? ValidationResult.inValidInstance("Product name already exist") : ValidationResult.validInstance());
       if (Helpers.isNullOrEmpty(name))
         model.setName(product.getName());
       else
@@ -532,6 +532,125 @@ public class MenuService {
         Logger.printDanger("Update product failed!");
     } catch (RuntimeException e) {
       Logger.printError(this.getClass().getName(), "editProductScreen", e);
+    }
+  }
+
+  public void listCouponsScreen() {
+    AtomicReference<SearchCouponParameter> searchParameters = new AtomicReference<>(new SearchCouponParameter());
+    AtomicBoolean goBack = new AtomicBoolean(false);
+    do {
+      banner("coupons");
+      List<Coupon> coupons = productService.listAllCoupons(searchParameters.get());
+      System.out.printf("search by\n" +
+              "\tcode: %-20s\n" +
+              "\ttype: %-20s\n\n",
+          Helpers.isNullOrEmpty(searchParameters.get().getCode()) ? "n/a" : searchParameters.get().getCode(),
+          searchParameters.get().getType() == null ? "n/a" : searchParameters.get().getType());
+
+      System.out.printf("%-7s %-15s %-10s %-20s %20s\n", "No.", "code", "type", "value", "target product");
+      System.out.println("-".repeat(80));
+      if (coupons.isEmpty())
+        Logger.printInfo("No coupon found...");
+      for (int couponNo = 0; couponNo < coupons.size(); couponNo++) {
+        Coupon coupon = coupons.get(couponNo);
+        Product product = productService.findProduct(coupon.getTargetProduct()).orElseThrow();
+        System.out.printf("%-7s %-15s %-10s %-20s %20s\n", couponNo, coupon.getCode(), coupon.getType(),
+           coupon.getType() == CouponType.PRICE ? Helpers.toString(coupon.getValue(), "USD", true)
+            : coupon.getValue() + " (%)", product.getName());
+      }
+
+      List<ActionOption<Runnable>> actionOptions = new ArrayList<>() {{
+        add(new ActionOption<>("search", () -> {
+          try {
+            SearchCouponParameter parameters = new SearchCouponParameter();
+
+            Helpers.requestStringInput(scanner, "Search by code: ", "code", parameters);
+            Helpers.requestSelectValue(scanner, "Filter by type: ", Constants.COUPON_TYPE_OPTIONS, "type", parameters);
+
+            searchParameters.set(parameters);
+          } catch (RuntimeException e) {
+            Logger.printError(this.getClass().getName(), "listCouponsScreen", e);
+          }
+        }));
+        add(new ActionOption<>("clear search", () -> searchParameters.set(new SearchCouponParameter())));
+        add(new ActionOption<>("create coupon", () -> createCouponScreen()));
+        add(new ActionOption<>("edit coupon", () -> {
+          int couponNo = Helpers.requestIntInput(scanner, "Enter coupon No. to edit: ", (value) -> {
+            if (value < 0 || value >= coupons.size()) {
+              return ValidationResult.inValidInstance("Given coupon No. is out of index.");
+            }
+            return ValidationResult.validInstance();
+          });
+          editCouponScreen(coupons.get(couponNo));
+        }));
+      }};
+
+      addCommonActions(actionOptions, goBack);
+      Helpers.requestSelectAction(scanner, "Your choice [0-" + (actionOptions.size() - 1) + "]: ", actionOptions);
+    } while (!goBack.get());
+  }
+
+  public void createCouponScreen() {
+    try {
+      banner("create coupon");
+      CreateCouponModel model = new CreateCouponModel();
+
+      List<ValueOption<UUID>> productOptions = productService.listAllProducts(new SearchProductParameters()).stream()
+          .map(p -> new ValueOption<>(p.getName(), p.getId())).collect(Collectors.toList());
+
+      Helpers.requestSelectValue(scanner, "Select target product: ", productOptions, "targetProduct", model);
+      Helpers.requestSelectValue(scanner, "Select coupon type: ", Constants.COUPON_TYPE_OPTIONS, "type", model);
+
+      if (model.getType().equals(CouponType.PRICE)) {
+        Helpers.requestDoubleInput(scanner, "Enter price: ", "price", model);
+        model.setPercent(0);
+      } else {
+        Helpers.requestIntInput(scanner, "Enter percent: ", "percent", model);
+        model.setPrice(0.0);
+      }
+
+      if (productService.addCoupon(model))
+        Logger.printSuccess("Add new coupon successfully!");
+      else
+        Logger.printDanger("Add new coupon failed!");
+    } catch (RuntimeException e) {
+      Logger.printError(this.getClass().getName(), "createCouponScreen", e);
+    }
+  }
+
+  public void editCouponScreen(Coupon coupon) {
+    try {
+      banner("edit coupon");
+      UpdateCouponModel model = new UpdateCouponModel();
+
+      // not support edit coupon's id & type
+      model.setId(coupon.getId());
+      model.setType(coupon.getType());
+
+      Logger.printInfo("Editing coupon: %s", coupon.getCode());
+
+      if (model.getType().equals(CouponType.PRICE)) {
+        Logger.printInfo(String.format("Old price: %.2f", coupon.getValue()));
+        Helpers.requestDoubleInput(scanner, "Enter price: ", "price", model);
+        if (model.getPrice() == null)
+          model.setPrice(coupon.getValue());
+        model.setPercent(0);
+      } else {
+        Logger.printInfo(String.format("Old percent: %.0f", coupon.getValue()));
+        Helpers.requestIntInput(scanner, "Enter percent: ", "percent", model);
+        if (model.getPercent() == null)
+          model.setPercent((int) coupon.getValue());
+        model.setPrice(0.0);
+      }
+
+      if (productService.updateCoupon(model)) {
+        Logger.printSuccess("Update coupon successfully!");
+        currentCart.syncCouponInfo(coupon);
+        cartService.syncCouponInfo(coupon);
+      } else
+        Logger.printDanger("Update coupon failed!");
+    } catch (RuntimeException e) {
+      Logger.printError(this.getClass().getName(), "editCouponScreen", e);
     }
   }
 

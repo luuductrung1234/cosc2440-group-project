@@ -4,6 +4,7 @@ package oss.cosc2440.rmit.seedwork;
 * @author Group 8
 */
 
+import oss.cosc2440.rmit.domain.CouponType;
 import oss.cosc2440.rmit.domain.ProductType;
 import oss.cosc2440.rmit.domain.TaxType;
 import oss.cosc2440.rmit.model.ProductSort;
@@ -29,6 +30,16 @@ public class Constants {
 
     {
       add(new ValueOption<>(ProductType.PHYSICAL.toString(), ProductType.PHYSICAL));
+    }
+  };
+
+  public static final List<ValueOption<CouponType>> COUPON_TYPE_OPTIONS = new ArrayList<>() {
+    {
+      add(new ValueOption<>(CouponType.PRICE.toString(), CouponType.PRICE));
+    }
+
+    {
+      add(new ValueOption<>(CouponType.PERCENT.toString(), CouponType.PERCENT));
     }
   };
 
