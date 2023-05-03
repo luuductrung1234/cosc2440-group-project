@@ -73,11 +73,11 @@ public class MenuService {
       }
 
       System.out.println();
-      System.out.printf("%-20s: %s\n", "Total Origin Amount", Helpers.toString(currentCart.totalOriginAmount()));
+      System.out.printf("%-20s:   %s\n", "Total Origin Amount", Helpers.toString(currentCart.totalOriginAmount()));
       System.out.printf("%-20s: + %s\n", "Tax", Helpers.toString(currentCart.totalTax()));
       System.out.printf("%-20s: - %s\n", "Discount", Helpers.toString(currentCart.totalDiscount()));
       System.out.printf("%-20s: + %s\n", "Shipping Fee", Helpers.toString(currentCart.shippingFee(), "USD", true));
-      System.out.printf("%-20s: %s\n", "Total Amount", Helpers.toString(currentCart.totalAmount()));
+      System.out.printf("%-20s:   %s\n", "Total Amount", Helpers.toString(currentCart.totalAmount()));
 
       List<ActionOption<Runnable>> actionOptions = new ArrayList<>();
 

@@ -10,8 +10,8 @@ Product,943810c0-1d11-4b44-9901-83f3412814ff,Phantom FlyCam,best quality camera,
 Product,ec085cd6-8b90-4427-a52b-061425401d10,Cannon D63,professional camera,1,459,0.2,PHYSICAL,LUXURY_TAX,false
 Product,847a0d21-7ed9-46ee-bf6e-c9e8fef92320,Logitech Keyboard,typing faster,2,20.0,0.1,PHYSICAL,NORMAL_TAX,true
 Product,ec39e6c8-900f-4ee8-b5df-44b79b09a44a,Netflix Subscription,1 month premium subscription,10,3.99,0.0,DIGITAL,NORMAL_TAX,true
-Coupon,2fc6406c-3e95-4a6f-8bfe-2ef2cf3036c6,CP001,PRICE,4.99,be454710-cef0-4b8f-a7c7-b93c75371166
-Coupon,544d0756-8d10-4c80-8efb-3ef6d188d8b8,CP002,PERCENT,10,0f5ebdc7-afc5-48b9-923f-b34ba54e9d7d
-Coupon,2cdadc69-cd8e-4e7d-b5fa-8c6257e1e692,CP003,PERCENT,5,c6fbde46-272f-4f42-81b5-e2cd8058b638
-Coupon,2803f491-19e4-4b8a-9626-f053a5cacd67,CP004,PRICE,10,c6fbde46-272f-4f42-81b5-e2cd8058b638
-Coupon,4966f385-5008-4504-886a-659c2e64682a,CP005,PRICE,1,6e07aa4a-1a48-4fda-9408-88897aef22db
+Coupon,2fc6406c-3e95-4a6f-8bfe-2ef2cf3036c6,CP001,PRICE,4.99,0,be454710-cef0-4b8f-a7c7-b93c75371166
+Coupon,544d0756-8d10-4c80-8efb-3ef6d188d8b8,CP002,PERCENT,0.0,10,0f5ebdc7-afc5-48b9-923f-b34ba54e9d7d
+Coupon,2cdadc69-cd8e-4e7d-b5fa-8c6257e1e692,CP003,PERCENT,0.0,5,c6fbde46-272f-4f42-81b5-e2cd8058b638
+Coupon,2803f491-19e4-4b8a-9626-f053a5cacd67,CP004,PRICE,10,0,c6fbde46-272f-4f42-81b5-e2cd8058b638
+Coupon,4966f385-5008-4504-886a-659c2e64682a,CP005,PRICE,1,0,6e07aa4a-1a48-4fda-9408-88897aef22db

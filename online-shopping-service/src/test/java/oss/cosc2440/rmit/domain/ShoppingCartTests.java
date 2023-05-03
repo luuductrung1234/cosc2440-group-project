@@ -81,7 +81,7 @@ public class ShoppingCartTests {
         Product product = new Product("Product 1", "Description", 1, 10.0, 0.1, ProductType.PHYSICAL, TaxType.TAX_FREE, true);
          
         cart.addItem(product, 1);
-        Coupon coupon = new Coupon(UUID.randomUUID(), "ABCD", CouponType.PRICE, 10, product.getId());
+        Coupon coupon = new Coupon(UUID.randomUUID(), "ABCD", CouponType.PRICE, 10, 0, product.getId());
 
         // Assert
         assertTrue(cart.applyCoupon(coupon));

@@ -1,8 +1,8 @@
 package oss.cosc2440.rmit.domain;
 
 /**
-* @author Group 8
-*/
+ * @author Group 8
+ */
 
 import oss.cosc2440.rmit.seedwork.Helpers;
 
@@ -15,17 +15,19 @@ public class Coupon extends Domain<UUID> {
    */
   private final String code;
   private final CouponType type;
-  private final double value;
+  private final double price;
+  private final int percent;
   private final UUID targetProduct;
 
   /**
    * Constructor
    */
-  public Coupon(UUID uuid, String code, CouponType type, double value, UUID targetProduct) {
+  public Coupon(UUID uuid, String code, CouponType type, double price, int percent, UUID targetProduct) {
     super(uuid);
     this.code = code;
     this.type = type;
-    this.value = value;
+    this.price = price;
+    this.percent = percent;
     this.targetProduct = targetProduct;
   }
 
@@ -43,7 +45,7 @@ public class Coupon extends Domain<UUID> {
   public static Coupon deserialize(String data) {
     if (Helpers.isNullOrEmpty(data))
       throw new IllegalArgumentException("data to deserialize should not be empty!");
-    String[] fields = data.split(",", 6);
+    String[] fields = data.split(",", 7);
 
     if (!fields[0].equalsIgnoreCase(Coupon.class.getSimpleName()))
       return null;
@@ -52,7 +54,8 @@ public class Coupon extends Domain<UUID> {
         fields[2],
         CouponType.valueOf(fields[3]),
         Double.parseDouble(fields[4]),
-        UUID.fromString(fields[5]));
+        Integer.parseInt(fields[5]),
+        UUID.fromString(fields[6]));
   }
 
   // Getter methods
@@ -61,7 +64,7 @@ public class Coupon extends Domain<UUID> {
   }
 
   public double getValue() {
-    return value;
+    return this.type == CouponType.PRICE ? this.price : this.percent;
   }
 
   public String getCode() {
