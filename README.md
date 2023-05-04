@@ -21,8 +21,8 @@ must have features
 
 documentation
 - [] Demo video (max 7 minutes, normal play speed)
-- [] PDF report (max 8 pages)
-  - [] OOP design explanation
+- [x] PDF report (max 8 pages)
+  - [x] OOP design explanation
   - [x] UML diagram
   - [x] Describe automatic/manual tests that are used to ensure quality of the system.
 
