@@ -5,11 +5,15 @@ package oss.cosc2440.rmit.service;
 */
 
 import org.junit.jupiter.api.Test;
+
+import oss.cosc2440.rmit.domain.CouponType;
 import oss.cosc2440.rmit.domain.Product;
 import oss.cosc2440.rmit.domain.ProductType;
 import oss.cosc2440.rmit.domain.TaxType;
+import oss.cosc2440.rmit.model.CreateCouponModel;
 import oss.cosc2440.rmit.model.CreateProductModel;
 import oss.cosc2440.rmit.model.SearchProductParameters;
+import oss.cosc2440.rmit.model.UpdateCouponModel;
 import oss.cosc2440.rmit.model.UpdateProductModel;
 import oss.cosc2440.rmit.seedwork.Constants;
 import oss.cosc2440.rmit.seedwork.Helpers;
@@ -134,5 +138,44 @@ public class ProductServiceTests {
 
     // Assert
     assertFalse(updated);
+  }
+
+  @Test
+  public void addCouponShouldSuccess(){
+    // Setup
+    ClassLoader loader = ProductServiceTests.class.getClassLoader();
+    ProductService productService = new ProductService(Helpers.getPathToFile(loader, Constants.PRODUCT_FILE_NAME));
+
+    // Action
+    Optional<Product> productOptional = productService.findProduct(UUID.fromString("c6fbde46-272f-4f42-81b5-e2cd8058b638"));
+    Product product = productOptional.get();
+
+    CreateCouponModel model = new CreateCouponModel();
+    model.setType(CouponType.PERCENT);
+    model.setPercent(10);
+    model.setPrice(10.0);
+    model.setTargetProduct(product.getId());
+
+    boolean added = productService.addCoupon(model);
+
+    // Assert
+    assertTrue(added);
+  }
+
+  @Test void updateCouponShouldSuccess(){
+    // Setup
+    ClassLoader loader = ProductServiceTests.class.getClassLoader();
+    ProductService productService = new ProductService(Helpers.getPathToFile(loader, Constants.PRODUCT_FILE_NAME));
+
+    // Action
+    UpdateCouponModel model = new UpdateCouponModel();
+    model.setId(UUID.fromString("4966f385-5008-4504-886a-659c2e64682a"));
+    model.setPercent(10);
+    model.setPrice(10.0);
+    
+    boolean updated = productService.updateCoupon(model);
+
+    // Assert
+    assertTrue(updated);
   }
 }

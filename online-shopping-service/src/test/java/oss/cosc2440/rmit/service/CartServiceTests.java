@@ -5,11 +5,17 @@ package oss.cosc2440.rmit.service;
 */
 
 import org.junit.jupiter.api.Test;
+
+import oss.cosc2440.rmit.domain.CartItem;
+import oss.cosc2440.rmit.domain.Coupon;
+import oss.cosc2440.rmit.domain.CouponType;
 import oss.cosc2440.rmit.domain.ShoppingCart;
 import oss.cosc2440.rmit.seedwork.Constants;
 import oss.cosc2440.rmit.seedwork.Helpers;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -46,5 +52,14 @@ public class CartServiceTests {
 
     // Assert
     assertEquals(cartSize+1, cartService.listAll().size());
+  }
+
+  
+  @Test 
+  public void syncProductInfoShouldSuccess(){
+  }
+
+  @Test
+  public void syncCouponInfoShouldSuccess(){
   }
 }
