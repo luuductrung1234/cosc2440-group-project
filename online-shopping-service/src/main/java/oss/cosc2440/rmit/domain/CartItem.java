@@ -280,4 +280,8 @@ public class CartItem extends Domain<UUID> implements Gift, Splittable<CartItem>
   public String getCouponCode() {
     return couponCode;
   }
+
+  public double getCouponValue() {
+    return couponValue;
+  }
 }
